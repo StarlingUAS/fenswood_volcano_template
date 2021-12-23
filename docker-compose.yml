@@ -3,7 +3,7 @@ version: '3'
 services:
 
   controller:
-    build: example_python_controller
+    build: ./controller_image
       
   simhost:
     image: arthurrichards77/starling_simhost_fenswood:latest
