@@ -2,10 +2,10 @@
 Very simple script-based sequencer using the old school examples
 from https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber
 """
-import rclpy
+import rclpy                                                    # type: ignore
 
-from mavros_msgs.msg import State
-from mavros_msgs.srv import SetMode, CommandBool, CommandTOL
+from mavros_msgs.msg import State                               # type: ignore
+from mavros_msgs.srv import SetMode, CommandBool, CommandTOL    # type: ignore
 
 g_node = None
 last_state = None
