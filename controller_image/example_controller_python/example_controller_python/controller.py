@@ -6,15 +6,26 @@ import rclpy                                                    # type: ignore
 
 from mavros_msgs.msg import State                               # type: ignore
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong    # type: ignore
+from sensor_msgs.msg import NavSatFix                           # type: ignore
 
 g_node = None
 last_state = None
+last_pos = None
+last_alt_rel = None
+init_alt = None
 
 def state_callback(msg):
-    global g_node, last_state
+    global last_state
     last_state = msg
     g_node.get_logger().info('Mode: {}.  Armed: {}.  System status: {}'.format(msg.mode,msg.armed,msg.system_status))
 
+def position_callback(msg):
+    global g_node, last_pos, last_alt_rel
+    # determine altitude relative to arm
+    if init_alt:
+        last_alt_rel = msg.altitude - init_alt
+    last_pos = msg
+    g_node.get_logger().info('Drone at {}N,{}E altitude {}m'.format(msg.latitude,msg.longitude,last_alt_rel))
 
 def wait_for_ready_status():
     # wait for system_status=3 on startup, or exit
@@ -56,7 +67,7 @@ def request_mode_change(new_mode="GUIDED"):
 
 
 def arm_drone():
-    global last_state
+    global last_state, init_alt
     cli = g_node.create_client(CommandBool, 'mavros/cmd/arming')
     req = CommandBool.Request()
     req.value = True
@@ -73,6 +84,9 @@ def arm_drone():
             rclpy.spin_once(g_node)
         if last_state.armed:
             g_node.get_logger().info('Arming successful')
+            # grab current altitude if we have one
+            if last_pos:
+                init_alt = last_pos.altitude
             break
 
 
@@ -94,19 +108,23 @@ def main(args=None):
 
     g_node = rclpy.create_node('example_controller')
 
-    subscription = g_node.create_subscription(State, 'mavros/state', state_callback, 10)
-    subscription  # prevent unused variable warning
+    state_sub = g_node.create_subscription(State, 'mavros/state', state_callback, 10)
+    state_sub  # prevent unused variable warning
 
     wait_for_ready_status()
 
     request_mode_change()
 
-    # request global position at 1Hz
+    # subscribe to global position and request MAVLINK data at 1Hz
+    pos_sub = g_node.create_subscription(NavSatFix, 'mavros/global_position/global', position_callback, 10)
+    pos_sub  # prevent unused variable warning
     request_datastream(33,1000000)
     
     arm_drone()
 
     request_takeoff()
+
+    
 
     while rclpy.ok():
         rclpy.spin_once(g_node)
