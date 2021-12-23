@@ -5,7 +5,7 @@ from https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscribe
 import rclpy                                                    # type: ignore
 
 from mavros_msgs.msg import State                               # type: ignore
-from mavros_msgs.srv import SetMode, CommandBool, CommandTOL    # type: ignore
+from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong    # type: ignore
 
 g_node = None
 last_state = None
@@ -29,6 +29,19 @@ def wait_for_ready_status():
                 return True
     # if get to here, timed out
     return False
+
+
+def request_datastream(msg_id, time_interval):
+    cli = g_node.create_client(CommandLong, 'mavros/cmd/command')
+    req = CommandLong.Request()
+    req.command = 511
+    req.param1 = float(msg_id)
+    req.param2 = float(time_interval)
+    while not cli.wait_for_service(timeout_sec=1.0):
+        g_node.get_logger().info('command_int service not available, waiting again...')
+    future = cli.call_async(req)
+    rclpy.spin_until_future_complete(g_node, future)
+    g_node.get_logger().info('Requested message {} at interval {}.'.format(msg_id, time_interval))
 
 
 def request_mode_change(new_mode="GUIDED"):
@@ -87,6 +100,9 @@ def main(args=None):
     wait_for_ready_status()
 
     request_mode_change()
+
+    # request global position at 1Hz
+    request_datastream(33,1000000)
     
     arm_drone()
 
