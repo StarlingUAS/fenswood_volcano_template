@@ -87,7 +87,7 @@ def request_arm():
     g_node.get_logger().info('Arming request sent.')
 
 
-def request_takeoff(target_alt=20.0):
+def request_takeoff(target_alt):
     cli = g_node.create_client(CommandTOL, 'mavros/cmd/takeoff')
     req = CommandTOL.Request()
     req.altitude = target_alt
@@ -113,9 +113,6 @@ def main(args=None):
     pos_sub = g_node.create_subscription(NavSatFix, 'mavros/global_position/global', position_callback, 10)
     pos_sub  # prevent unused variable warning
 
-    # position isn't sent unless we ask for it 
-    request_datastream(33,1000000) # msg 33 at 1Hz please
-
     # first wait for the system status to become 3 "standby"
     # see https://mavlink.io/en/messages/common.html#MAV_STATE
     for try_standby in range(60):
@@ -123,6 +120,9 @@ def main(args=None):
         if last_state.system_status==3:
             g_node.get_logger().info('Drone ready for flight')
             break 
+
+    # position isn't sent unless we ask for it 
+    request_datastream(33,1000000) # msg 33 at 1Hz please
 
     # now change mode to GUIDED
     # always seems to work so not verified
