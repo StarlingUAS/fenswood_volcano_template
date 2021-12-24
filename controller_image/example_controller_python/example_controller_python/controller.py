@@ -7,7 +7,7 @@ import rclpy                                                    # type: ignore
 from mavros_msgs.msg import State                               # type: ignore
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong    # type: ignore
 from sensor_msgs.msg import NavSatFix                           # type: ignore
-from geographic_msgs.msg import GeoPoseStamped
+from geographic_msgs.msg import GeoPoseStamped                  # type: ignore
 
 g_node = None
 last_state = None
