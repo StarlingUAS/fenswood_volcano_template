@@ -3,6 +3,8 @@ Pre-requisites:
 - vscode
 - git
 
+For Docker simulation on either Linux or Windows, navigate to cloned folder and run `docker-compose up --build`.
+
 For native development on Linux:
 - ROS2 Foxy: https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html
 - Weird bug before ROS would work: pip install argcomplete 
