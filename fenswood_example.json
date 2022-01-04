@@ -41,13 +41,13 @@
       "showFullMessageForDiff": false
     },
     "Publish!k6u9bw": {
-      "topicName": "/mission_start",
-      "datatype": "std_msgs/msg/Empty",
+      "topicName": "/vehicle_1/gimbal_tilt_cmd",
+      "datatype": "std_msgs/msg/Float32",
       "buttonText": "Publish",
       "buttonTooltip": "",
       "buttonColor": "#00A871",
       "advancedView": true,
-      "value": "{}"
+      "value": "{\n  \"data\": 0\n}"
     },
     "RawMessages!2p23zee": {
       "topicPath": "/vehicle_1/mavros/state",

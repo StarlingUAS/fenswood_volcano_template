@@ -58,29 +58,6 @@ def wait_for_new_status():
             rclpy.spin_once(g_node)
 
 
-def request_arm():
-    cli = g_node.create_client(CommandBool, 'mavros/cmd/arming')
-    req = CommandBool.Request()
-    req.value = True
-    while not cli.wait_for_service(timeout_sec=1.0):
-        g_node.get_logger().info('arming service not available, waiting again...')
-
-    future = cli.call_async(req)
-    rclpy.spin_until_future_complete(g_node, future)
-    g_node.get_logger().info('Arming request sent.')
-
-
-def request_takeoff(target_alt):
-    cli = g_node.create_client(CommandTOL, 'mavros/cmd/takeoff')
-    req = CommandTOL.Request()
-    req.altitude = target_alt
-    while not cli.wait_for_service(timeout_sec=1.0):
-        g_node.get_logger().info('takeoff service not available, waiting again...')
-    future = cli.call_async(req)
-    rclpy.spin_until_future_complete(g_node, future)
-    g_node.get_logger().info('Takeoff request sent.')
-
-
 def main(args=None):
     global g_node, g_init_alt
     
@@ -121,13 +98,22 @@ def main(args=None):
         g_node.get_logger().info('set_mode service not available, waiting again...')
     mode_req = SetMode.Request()
     mode_req.custom_mode = "GUIDED"
-    resp = mode_cli.call(mode_req)
+    future = mode_cli.call_async(mode_req)
+    rclpy.spin_until_future_complete(g_node, future)    # wait for response
     g_node.get_logger().info('Request sent for GUIDED mode.')
     
     # next, try to arm the drone
+    arm_cli = g_node.create_client(CommandBool, 'mavros/cmd/arming')
+    while not arm_cli.wait_for_service(timeout_sec=1.0):
+        g_node.get_logger().info('arming service not available, waiting again...')
+    # build the request
+    arm_req = CommandBool.Request()
+    arm_req.value = True
     # keep trying until arming detected in state message, or 60 attempts
     for try_arm in range(60):
-        request_arm()
+        future = arm_cli.call_async(arm_req)
+        rclpy.spin_until_future_complete(g_node, future)
+        g_node.get_logger().info('Arming request sent.')
         wait_for_new_status()
         if g_last_state.armed:
             g_node.get_logger().info('Arming successful')
@@ -135,11 +121,22 @@ def main(args=None):
             if g_last_pos:
                 g_init_alt = g_last_pos.altitude
             break
+    else:
+        g_node.get_logger().error('Failed to arm')
 
     # take off and climb to 20.0m at current location
-    request_takeoff(20.0)
+    takeoff_cli = g_node.create_client(CommandTOL, 'mavros/cmd/takeoff')
+    while not takeoff_cli.wait_for_service(timeout_sec=1.0):
+        g_node.get_logger().info('takeoff service not available, waiting again...')
+    # build the request
+    takeoff_req = CommandTOL.Request()
+    takeoff_req.altitude = 20.0
+    # only call once - seems to work OK
+    future = takeoff_cli.call_async(takeoff_req)
+    rclpy.spin_until_future_complete(g_node, future)
+    g_node.get_logger().info('Takeoff request sent.')
 
-    # wait for drone to reach desired altitude
+    # wait for drone to reach desired altitude, or 60 attempts
     for try_alt in range(60):
         wait_for_new_status()
         g_node.get_logger().info('Climbing, altitude {}m'.format(g_last_alt_rel))
@@ -172,9 +169,11 @@ def main(args=None):
 
     # return home and land
     mode_req.custom_mode = "RTL"
-    resp = mode_cli.call(mode_req)
+    future = mode_cli.call_async(mode_req)
+    rclpy.spin_until_future_complete(g_node, future)    # wait for response
     g_node.get_logger().info('Request sent for RTL mode.')
     
+    # now just serve out the time until process killed
     while rclpy.ok():
         rclpy.spin_once(g_node)
 
