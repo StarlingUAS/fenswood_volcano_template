@@ -19,7 +19,7 @@ class FenswoodDroneController(Node):
 
     def __init__(self):
         super().__init__('example_controller')
-        self.last_state = None     # global for last received status message
+        self.last_status = None     # global for last received status message
         self.last_pos = None       # global for last received position message
         self.init_alt = None       # global for global altitude at start
         self.last_alt_rel = None   # global for last altitude relative to start
@@ -47,10 +47,14 @@ class FenswoodDroneController(Node):
         self.target_pub = self.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
         # and make a placeholder for the last sent target
         self.last_target = GeoPoseStamped()
+        # initial state for finite state machine
+        self.control_state = 'init'
+        # timer for time spent in each state
+        self.state_timer = 0
         
     # on receiving status message, save it to global
     def state_callback(self,msg):
-        self.last_state = msg
+        self.last_status = msg
         self.get_logger().debug('Mode: {}.  Armed: {}.  System status: {}'.format(msg.mode,msg.armed,msg.system_status))
 
     # on receiving positon message, save it to global
@@ -68,17 +72,17 @@ class FenswoodDroneController(Node):
         Wait for new state message to be received.  These are sent at
         1Hz so calling this is roughly equivalent to one second delay.
         """
-        if self.last_state:
+        if self.last_status:
             # if had a message before, wait for higher timestamp
-            last_stamp = self.last_state.header.stamp.sec
+            last_stamp = self.last_status.header.stamp.sec
             for try_wait in range(60):
                 rclpy.spin_once(self)
-                if self.last_state.header.stamp.sec > last_stamp:
+                if self.last_status.header.stamp.sec > last_stamp:
                     break
         else:
             # if never had a message, just wait for first one          
             for try_wait in range(60):
-                if self.last_state:
+                if self.last_status:
                     break
                 rclpy.spin_once(self)
 
@@ -115,72 +119,86 @@ class FenswoodDroneController(Node):
         self.target_pub.publish(self.last_target)
         self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt)) 
 
-    def run(self):
-        # first wait for the system status to become 3 "standby"
-        # see https://mavlink.io/en/messages/common.html#MAV_STATE
-        for try_standby in range(60):
-            self.wait_for_new_status()
-            if self.last_state.system_status==3:
-                self.get_logger().info('Drone ready for flight')
-                break 
+    def state_transition(self):
+        if self.control_state =='init':
+            if self.last_status.system_status==3:
+                self.get_logger().info('Drone initialized')
+                # send command to request regular position updates
+                self.request_data_stream(33, 1000000)
+                self.get_logger().info('Requested position stream')
+                # change mode to GUIDED
+                self.change_mode("GUIDED")
+                self.get_logger().info('Request sent for GUIDED mode.')
+                # move on to arming
+                return('arming')
+            else:
+                return('init')
 
-        # send command to request regular position updates
-        self.request_data_stream(33, 1000000)
-        self.get_logger().info('Requested position stream')
-
-        # now change mode to GUIDED
-        self.change_mode("GUIDED")
-        self.get_logger().info('Request sent for GUIDED mode.')
-        
-        # next, try to arm the drone
-        # keep trying until arming detected in state message, or 60 attempts
-        for try_arm in range(60):
-            self.arm_request()
-            self.get_logger().info('Arming request sent.')
-            self.wait_for_new_status()
-            if self.last_state.armed:
+        elif self.control_state == 'arming':
+            if self.last_status.armed:
                 self.get_logger().info('Arming successful')
                 # armed - grab init alt for relative working
                 if self.last_pos:
                     self.init_alt = self.last_pos.altitude
-                break
-        else:
-            self.get_logger().error('Failed to arm')
+                # send takeoff command
+                self.takeoff(20.0)
+                self.get_logger().info('Takeoff request sent.')
+                return('climbing')
+            elif self.state_timer > 60:
+                # timeout
+                self.get_logger().error('Failed to arm')
+                return('exit')
+            else:
+                self.arm_request()
+                self.get_logger().info('Arming request sent.')
+                return('arming')
 
-        # take off and climb to 20.0m at current location
-        self.takeoff(20.0)
-        self.get_logger().info('Takeoff request sent.')
-
-        # wait for drone to reach desired altitude, or 60 attempts
-        for try_alt in range(60):
-            self.wait_for_new_status()
-            self.get_logger().info('Climbing, altitude {}m'.format(self.last_alt_rel))
+        elif self.control_state == 'climbing':
             if self.last_alt_rel > 19.0:
                 self.get_logger().info('Close enough to flight altitude')
-                break
+                # move drone by sending setpoint message
+                self.flyto(51.423, -2.671, self.init_alt - 30.0) # unexplained correction factor on altitude
+                return('on_way')
+            elif self.state_timer > 60:
+                # timeout
+                self.get_logger().error('Failed to reach altitude')
+                return('landing')
+            else:
+                self.get_logger().info('Climbing, altitude {}m'.format(self.last_alt_rel))
+                return('climbing')
 
-        # move drone by sending setpoint message
-        self.flyto(51.423, -2.671, self.init_alt - 30.0) # unexplained correction factor on altitude
-
-        # wait for drone to reach desired position, or timeout after 60 attempts
-        for try_arrive in range(60):
-            self.wait_for_new_status()
+        elif self.control_state == 'on_way':
             d_lon = self.last_pos.longitude - self.last_target.pose.position.longitude
             d_lat = self.last_pos.latitude - self.last_target.pose.position.latitude
-            self.get_logger().info('Target error {},{}'.format(d_lat,d_lon))
-            if abs(d_lon) < 0.0001:
-                if abs(d_lat) < 0.0001:
-                    self.get_logger().info('Close enough to target delta={},{}'.format(d_lat,d_lon))
-                    break
+            if (abs(d_lon) < 0.0001) & (abs(d_lat) < 0.0001):
+                self.get_logger().info('Close enough to target delta={},{}'.format(d_lat,d_lon))
+                return('landing')
+            elif self.state_timer > 60:
+                # timeout
+                self.get_logger().error('Failed to reach target')
+                return('landing')
+            else:
+                self.get_logger().info('Target error {},{}'.format(d_lat,d_lon))
+                return('on_way')
+            
+        elif self.control_state == 'landing':
+            # return home and land
+            self.change_mode("RTL")
+            self.get_logger().info('Request sent for RTL mode.')
+            return('exit')
 
-        # return home and land
-        self.change_mode("RTL")
-        self.get_logger().info('Request sent for RTL mode.')
-        
-        # now just serve out the time until process killed
-        while rclpy.ok():
-            rclpy.spin_once(self)
 
+    def run(self):
+        for try_loop in range(600):
+            if rclpy.ok():
+                self.wait_for_new_status()
+                new_state = self.state_transition()
+                if new_state == self.control_state:
+                    self.state_timer = self.state_timer + 1
+                else:
+                    self.state_timer = 0
+                self.control_state = new_state
+                    
 
 def main(args=None):
     
