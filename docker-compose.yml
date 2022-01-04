@@ -3,7 +3,7 @@ version: '3'
 services:
 
   controller:
-    build: ./controller_image
+    build: ./fenswood_drone_controller
       
   simhost:
     image: arthurrichards77/starling_simhost_fenswood:latest

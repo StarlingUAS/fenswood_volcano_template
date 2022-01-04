@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="fenswood_drone_controller" exec="controller" namespace="/vehicle_1" />
+</launch>

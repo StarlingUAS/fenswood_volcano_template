@@ -1,3 +1,0 @@
-<launch>
-<node pkg="example_controller_python" exec="controller" namespace="/vehicle_1" />
-</launch>

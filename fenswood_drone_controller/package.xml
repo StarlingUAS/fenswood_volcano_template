@@ -2,9 +2,9 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema" ?>
 <package format="3">
 
-    <name>example_controller_python</name>
+    <name>fenswood_drone_controller</name>
     <version>0.0.0</version>
-    <description>Example Python controller for ArduPilot</description>
+    <description>Example Python controller for ArduPilot at Fenswood</description>
     <maintainer email="robert.clarke@bristol.ac.uk">Robert Clarke</maintainer>
     <license>TODO</license>
 

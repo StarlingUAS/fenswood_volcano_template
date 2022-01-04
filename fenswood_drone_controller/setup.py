@@ -1,7 +1,7 @@
 from setuptools import setup
 from glob import glob
 
-package_name = "example_controller_python"
+package_name = "fenswood_drone_controller"
 
 setup(
     name=package_name,
@@ -16,13 +16,12 @@ setup(
     zip_safe=True,
     maintainer="Robert Clarke",
     maintainer_email="TODO",
-    description="Example Python controller for PX4",
+    description="Example Python controller for Ardupilot at Fenswood",
     license="TODO",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "controller = example_controller_python.controller:main",
-            "fenswood = example_controller_python.fenswood_controller:main"
+            "controller = fenswood_drone_controller.controller:main",
         ]
     }
 )
