@@ -5,11 +5,9 @@
     <name>fenswood_drone_controller</name>
     <version>0.0.0</version>
     <description>Example Python controller for ArduPilot at Fenswood</description>
-    <maintainer email="robert.clarke@bristol.ac.uk">Robert Clarke</maintainer>
+    <maintainer email="arthur.richards@bristol.ac.uk">Arthur Richards</maintainer>
     <license>TODO</license>
 
-    <buildtool_depend>ament_python</buildtool_depend>
-    
     <depend>rclpy</depend>
 
     <depend>mavros_msgs</depend>
