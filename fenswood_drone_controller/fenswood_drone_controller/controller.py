@@ -14,9 +14,6 @@ from geographic_msgs.msg import GeoPoseStamped                  # type: ignore
 # import service definitions for changing mode, arming, take-off and generic command
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong    # type: ignore
 
-self = None           # global for the node handle
-
-
 
 class FenswoodDroneController(Node):
 
@@ -30,7 +27,27 @@ class FenswoodDroneController(Node):
         state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
         # ...and the other for global position
         pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
-
+        # create service clients for long command (datastream requests)...
+        self.cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
+        while not self.cmd_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('command_int service not available, waiting again...')
+        # ... for mode changes ...
+        self.mode_cli = self.create_client(SetMode, 'mavros/set_mode')
+        while not self.mode_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('set_mode service not available, waiting again...')
+        # ... for arming ...
+        self.arm_cli = self.create_client(CommandBool, 'mavros/cmd/arming')
+        while not self.arm_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('arming service not available, waiting again...')
+        # ... and for takeoff
+        self.takeoff_cli = self.create_client(CommandTOL, 'mavros/cmd/takeoff')
+        while not self.takeoff_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('takeoff service not available, waiting again...')
+        # create publisher for setpoint
+        self.target_pub = self.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
+        # and make a placeholder for the last sent target
+        self.last_target = GeoPoseStamped()
+        
     # on receiving status message, save it to global
     def state_callback(self,msg):
         self.last_state = msg
@@ -65,6 +82,39 @@ class FenswoodDroneController(Node):
                     break
                 rclpy.spin_once(self)
 
+    def request_data_stream(self,msg_id,msg_interval):
+        cmd_req = CommandLong.Request()
+        cmd_req.command = 511
+        cmd_req.param1 = float(msg_id)
+        cmd_req.param2 = float(msg_interval)
+        future = self.cmd_cli.call_async(cmd_req)
+        rclpy.spin_until_future_complete(self, future)    # wait for response
+
+    def change_mode(self,new_mode):
+        mode_req = SetMode.Request()
+        mode_req.custom_mode = new_mode
+        future = self.mode_cli.call_async(mode_req)
+        rclpy.spin_until_future_complete(self, future)    # wait for response
+
+    def arm_request(self):
+        arm_req = CommandBool.Request()
+        arm_req.value = True
+        future = self.arm_cli.call_async(arm_req)
+        rclpy.spin_until_future_complete(self, future)
+
+    def takeoff(self,target_alt):
+        takeoff_req = CommandTOL.Request()
+        takeoff_req.altitude = target_alt
+        future = self.takeoff_cli.call_async(takeoff_req)
+        rclpy.spin_until_future_complete(self, future)
+
+    def flyto(self,lat,lon,alt):
+        self.last_target.pose.position.latitude = lat
+        self.last_target.pose.position.longitude = lon
+        self.last_target.pose.position.altitude = alt
+        self.target_pub.publish(self.last_target)
+        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt)) 
+
     def run(self):
         # first wait for the system status to become 3 "standby"
         # see https://mavlink.io/en/messages/common.html#MAV_STATE
@@ -75,39 +125,17 @@ class FenswoodDroneController(Node):
                 break 
 
         # send command to request regular position updates
-        cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
-        while not cmd_cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('command_int service not available, waiting again...')
-        cmd_req = CommandLong.Request()
-        cmd_req.command = 511
-        cmd_req.param1 = float(33)  # msg ID for position is 33 \
-                                    # https://mavlink.io/en/messages/common.html#GLOBAL_POSITION_INT
-        cmd_req.param2 = float(1000000)    # 1000000 micro-second interval : 1Hz rate
-        future = cmd_cli.call_async(cmd_req)
-        rclpy.spin_until_future_complete(self, future)    # wait for response
+        self.request_data_stream(33, 1000000)
         self.get_logger().info('Requested position stream')
 
         # now change mode to GUIDED
-        mode_cli = self.create_client(SetMode, 'mavros/set_mode')
-        while not mode_cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('set_mode service not available, waiting again...')
-        mode_req = SetMode.Request()
-        mode_req.custom_mode = "GUIDED"
-        future = mode_cli.call_async(mode_req)
-        rclpy.spin_until_future_complete(self, future)    # wait for response
+        self.change_mode("GUIDED")
         self.get_logger().info('Request sent for GUIDED mode.')
         
         # next, try to arm the drone
-        arm_cli = self.create_client(CommandBool, 'mavros/cmd/arming')
-        while not arm_cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('arming service not available, waiting again...')
-        # build the request
-        arm_req = CommandBool.Request()
-        arm_req.value = True
         # keep trying until arming detected in state message, or 60 attempts
         for try_arm in range(60):
-            future = arm_cli.call_async(arm_req)
-            rclpy.spin_until_future_complete(self, future)
+            self.arm_request()
             self.get_logger().info('Arming request sent.')
             self.wait_for_new_status()
             if self.last_state.armed:
@@ -120,15 +148,7 @@ class FenswoodDroneController(Node):
             self.get_logger().error('Failed to arm')
 
         # take off and climb to 20.0m at current location
-        takeoff_cli = self.create_client(CommandTOL, 'mavros/cmd/takeoff')
-        while not takeoff_cli.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('takeoff service not available, waiting again...')
-        # build the request
-        takeoff_req = CommandTOL.Request()
-        takeoff_req.altitude = 20.0
-        # only call once - seems to work OK
-        future = takeoff_cli.call_async(takeoff_req)
-        rclpy.spin_until_future_complete(self, future)
+        self.takeoff(20.0)
         self.get_logger().info('Takeoff request sent.')
 
         # wait for drone to reach desired altitude, or 60 attempts
@@ -140,22 +160,13 @@ class FenswoodDroneController(Node):
                 break
 
         # move drone by sending setpoint message
-        target_pub = self.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
-        self.wait_for_new_status() # short delay after creating publisher ensures message not lost
-        target_msg = GeoPoseStamped()
-        target_msg.pose.position.latitude = 51.423
-        target_msg.pose.position.longitude = -2.671
-        target_msg.pose.position.altitude = self.init_alt - 30.0 # unexplained correction factor
-        target_pub.publish(target_msg)
-        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(target_msg.pose.position.latitude,
-                                                                            target_msg.pose.position.longitude,
-                                                                            target_msg.pose.position.altitude)) 
+        self.flyto(51.423, -2.671, self.init_alt - 30.0) # unexplained correction factor on altitude
 
         # wait for drone to reach desired position, or timeout after 60 attempts
         for try_arrive in range(60):
             self.wait_for_new_status()
-            d_lon = self.last_pos.longitude - target_msg.pose.position.longitude
-            d_lat = self.last_pos.latitude - target_msg.pose.position.latitude
+            d_lon = self.last_pos.longitude - self.last_target.pose.position.longitude
+            d_lat = self.last_pos.latitude - self.last_target.pose.position.latitude
             self.get_logger().info('Target error {},{}'.format(d_lat,d_lon))
             if abs(d_lon) < 0.0001:
                 if abs(d_lat) < 0.0001:
@@ -163,9 +174,7 @@ class FenswoodDroneController(Node):
                     break
 
         # return home and land
-        mode_req.custom_mode = "RTL"
-        future = mode_cli.call_async(mode_req)
-        rclpy.spin_until_future_complete(self, future)    # wait for response
+        self.change_mode("RTL")
         self.get_logger().info('Request sent for RTL mode.')
         
         # now just serve out the time until process killed
