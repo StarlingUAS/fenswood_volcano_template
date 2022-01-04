@@ -23,7 +23,7 @@ g_last_alt_rel = None   # global for last altitude relative to start
 def state_callback(msg):
     global g_last_state
     g_last_state = msg
-    g_node.get_logger().info('Mode: {}.  Armed: {}.  System status: {}'.format(msg.mode,msg.armed,msg.system_status))
+    g_node.get_logger().debug('Mode: {}.  Armed: {}.  System status: {}'.format(msg.mode,msg.armed,msg.system_status))
 
 
 # on receiving positon message, save it to global
@@ -33,15 +33,15 @@ def position_callback(msg):
     if g_init_alt:
         g_last_alt_rel = msg.altitude - g_init_alt
     g_last_pos = msg
-    g_node.get_logger().info('Drone at {}N,{}E altitude {}m'.format(msg.latitude,
+    g_node.get_logger().debug('Drone at {}N,{}E altitude {}m'.format(msg.latitude,
                                                                     msg.longitude,
                                                                     g_last_alt_rel))
 
 
 def wait_for_new_status():
     """
-    Wait for new state message to be received.  These are sent
-    at 1Hz so is equivalent to one second delay.
+    Wait for new state message to be received.  These are sent at
+    1Hz so calling this is roughly equivalent to one second delay.
     """
     if g_last_state:
         # if had a message before, wait for higher timestamp
@@ -56,17 +56,6 @@ def wait_for_new_status():
             if g_last_state:
                 break
             rclpy.spin_once(g_node)
-
-
-def request_mode_change(new_mode):
-    cli = g_node.create_client(SetMode, 'mavros/set_mode')
-    req = SetMode.Request()
-    req.custom_mode = new_mode
-    while not cli.wait_for_service(timeout_sec=1.0):
-        g_node.get_logger().info('set_mode service not available, waiting again...')
-    future = cli.call_async(req)
-    rclpy.spin_until_future_complete(g_node, future)
-    g_node.get_logger().info('Request sent for {} mode.'.format(new_mode))
 
 
 def request_arm():
@@ -127,11 +116,16 @@ def main(args=None):
     g_node.get_logger().info('Requested position stream')
 
     # now change mode to GUIDED
-    # always seems to work so not verified
-    request_mode_change("GUIDED")
+    mode_cli = g_node.create_client(SetMode, 'mavros/set_mode')
+    while not mode_cli.wait_for_service(timeout_sec=1.0):
+        g_node.get_logger().info('set_mode service not available, waiting again...')
+    mode_req = SetMode.Request()
+    mode_req.custom_mode = "GUIDED"
+    resp = mode_cli.call(mode_req)
+    g_node.get_logger().info('Request sent for GUIDED mode.')
     
     # next, try to arm the drone
-    # keep trying until arming detected in stae message
+    # keep trying until arming detected in state message, or 60 attempts
     for try_arm in range(60):
         request_arm()
         wait_for_new_status()
@@ -141,7 +135,6 @@ def main(args=None):
             if g_last_pos:
                 g_init_alt = g_last_pos.altitude
             break
-    # note the timeout case is not properly handled
 
     # take off and climb to 20.0m at current location
     request_takeoff(20.0)
@@ -149,12 +142,14 @@ def main(args=None):
     # wait for drone to reach desired altitude
     for try_alt in range(60):
         wait_for_new_status()
+        g_node.get_logger().info('Climbing, altitude {}m'.format(g_last_alt_rel))
         if g_last_alt_rel > 19.0:
             g_node.get_logger().info('Close enough to flight altitude')
             break
 
     # move drone by sending setpoint message
     target_pub = g_node.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
+    wait_for_new_status() # short delay after creating publisher ensures message not lost
     target_msg = GeoPoseStamped()
     target_msg.pose.position.latitude = 51.423
     target_msg.pose.position.longitude = -2.671
@@ -164,19 +159,22 @@ def main(args=None):
                                                                            target_msg.pose.position.longitude,
                                                                            target_msg.pose.position.altitude)) 
 
-    # wait for drone to reach desired position
+    # wait for drone to reach desired position, or timeout after 60 attempts
     for try_arrive in range(60):
         wait_for_new_status()
         d_lon = g_last_pos.longitude - target_msg.pose.position.longitude
         d_lat = g_last_pos.latitude - target_msg.pose.position.latitude
+        g_node.get_logger().info('Target error {},{}'.format(d_lat,d_lon))
         if abs(d_lon) < 0.0001:
             if abs(d_lat) < 0.0001:
                 g_node.get_logger().info('Close enough to target delta={},{}'.format(d_lat,d_lon))
                 break
 
     # return home and land
-    request_mode_change("RTL")
-
+    mode_req.custom_mode = "RTL"
+    resp = mode_cli.call(mode_req)
+    g_node.get_logger().info('Request sent for RTL mode.')
+    
     while rclpy.ok():
         rclpy.spin_once(g_node)
 
