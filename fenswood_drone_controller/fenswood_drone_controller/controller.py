@@ -14,6 +14,19 @@ from geographic_msgs.msg import GeoPoseStamped                  # type: ignore
 # import service definitions for changing mode, arming, take-off and generic command
 from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong    # type: ignore
 
+import py_trees
+
+class InitReady(py_trees.behaviour.Behaviour):
+
+    def __init__(self, controller_node):
+        super().__init__('InitReady')
+        self._controller_node = controller_node
+
+    def update(self):
+        if self._controller_node.last_status.system_status==3:
+            return py_trees.common.Status.SUCCESS
+        else:
+            return py_trees.common.Status.FAILURE
 
 class FenswoodDroneController(Node):
 
