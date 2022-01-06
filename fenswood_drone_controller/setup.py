@@ -22,6 +22,7 @@ setup(
     entry_points={
         "console_scripts": [
             "controller = fenswood_drone_controller.controller:main",
+            "image_processor = fenswood_drone_controller.image_processor:main"
         ]
     }
 )

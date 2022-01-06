@@ -1,3 +1,6 @@
 <launch>
   <node pkg="fenswood_drone_controller" exec="controller" namespace="/vehicle_1" />
+
+  <node pkg="fenswood_drone_controller" exec="image_processor" namespace="/vehicle_1" />
+
 </launch>
