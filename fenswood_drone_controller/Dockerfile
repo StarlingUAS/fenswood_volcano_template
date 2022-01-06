@@ -1,7 +1,8 @@
 FROM uobflightlabstarling/starling-controller-base:latest
 
-RUN apt-get update
-RUN apt-get install -y python3-pip
+RUN apt update
+RUN apt-get install -y ros-foxy-vision-opencv python3-pip
+RUN pip3 install opencv-python
 RUN pip3 install py_trees
 
 COPY . /ros_ws/src/fenswood_drone_controller
