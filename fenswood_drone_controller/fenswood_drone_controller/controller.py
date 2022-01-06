@@ -26,10 +26,6 @@ class FenswoodDroneController(Node):
         self.last_pos = None       # global for last received position message
         self.init_alt = None       # global for global altitude at start
         self.last_alt_rel = None   # global for last altitude relative to start
-        # set up two subscribers, one for vehicle state...
-        state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
-        # ...and the other for global position
-        pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
 
     # on receiving status message, save it to global
     def state_callback(self,msg):
@@ -66,6 +62,11 @@ class FenswoodDroneController(Node):
                 rclpy.spin_once(self)
 
     def run(self):
+        # set up two subscribers, one for vehicle state...
+        state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
+        # ...and the other for global position
+        pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
+
         # first wait for the system status to become 3 "standby"
         # see https://mavlink.io/en/messages/common.html#MAV_STATE
         for try_standby in range(60):
