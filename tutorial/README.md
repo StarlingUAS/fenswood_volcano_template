@@ -1,40 +1,21 @@
-# Fenswood Volcano Template
+# Fenswood Volcano Template Tutorials
 
-This repository provides a template and tutorial to get you started writing code and running simulations for the Group Project in Aerial Robotics, based on the Fenswood Volcano scenario.
+## Introduction
 
-## Getting Started
+Inspired by the [minimal ROS2 examples](https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber), this tutorial takes you through several iterations of code with almost the same functionality.  A drone takes off, moves to a target location, and then flies home.  In the later `perception` example, some very basic information is gathered from its camera image.  Together, these examples give you all the building blocks you will need to carry out the project.
 
-### Prerequisites
+> You can also add your own functionality.  As well as the blocks of a minimum working solution, the examples show you how to add ROS packages and Python libraries.  You can use this facility to exploit some of the many third-party packages and libraries available in ROS and Python.
 
-You will need to install [git](https://git-scm.com/downloads) to access the software and [docker](https://docs.docker.com/get-docker/) to run it.  These are supported on Windows, Mac and Linux.  I also recommend [Visual Studio Code](https://code.visualstudio.com/) as an editing environment with easy access to terminal windows.
+The template is built on the [Starling](https://github.com/StarlingUAS) framework which combines open-source components to provide a realistic, cross-platform simulation for drone flight:
+ - [Gazebo](http://gazebosim.org/), a physical and visual simulation package
+ - [Ardupilot](https://ardupilot.org/), a free autopilot software with [MAVLINK](https://mavlink.io/en/) interfacing and [simulation](https://ardupilot.org/copter/docs/common-simulation.html) capability
+ - [ROS](https://www.ros.org/), a popular software framework for robot interfacing, plus the [MAVROS](http://wiki.ros.org/mavros) package for connecting MAVLINK drones to ROS. 
+ - [OpenCV](https://opencv.org/), an image processing library with Python support
+ - [Docker](https://www.docker.com/), a system for packaging and deploying 
 
-### Getting the template
-
-Navigate to a suitable file folder on your computer and run
-```
-git clone https://github.com/arthurrichards77/fenswood_volcano_template
-```
-
-### Running a first simulation
+> Surely there's a simpler way?  Almost certainly, but you wouldn't learn so much.  These are the standard tools of the robotics trade, and while it'll take you a while to learn them, the skills you get will go far beyond this project.
  
-For Docker simulation on either Linux or Windows, open a terminal, navigate to your cloned folder and run `docker-compose up --build`.
 
-> This could take a very long time on your first attempt, perhaps as much as half an hour.  It has a lot of stuff to download.
 
-You should eventually see an awful lot of stuff flying by in the terminal window.  The excerpt below is just a short example.
-```
-controller_1       | [controller-1] [INFO] [1641487809.030179200] [vehicle_1.example_controller]: Arm request sent
-controller_1       | [controller-1] [INFO] [1641487809.031134000] [vehicle_1.example_controller]: Controller state: arming for 13 steps
-mavros_1           | [run_ros1.sh-1] [ERROR] [1641487809.032953700]: FCU: PreArm: Bad GPS Position     
-controller_1       | [image_processor-2] [INFO] [1641487809.057483100] [vehicle_1.image_processor]: Got an image of 480 x 640
-```
+To simplify changing, each iteration lives in a different `git` branch
 
-If that's happening, open a web browser and open [http://localhost:8080](http://localhost:8080).  You should see a Gazebo window with a green field, a couple of cones, and a drone.  Watch long enough and the drone should take-off.  Watch even longer and it should return.
-
-Open another web browser and navigate to [studio.foxglove.dev](studio.foxglove.dev).  Select `Open Connection` and enter `ws://localhost:9090` in the URL box, if it's not already there.  This gets you into Foxglove, a powerful dashboard for ROS.  To get started, click the `Layouts` button (second down on the left hand menu) and then the `Import Layout` button at the top of the panel that opens.  Navigate to your `fenswood_volcano_template` folder and select `fenswood_example.json`.  Click the `Layouts` button again to close the panel and maximize the rest of the dashboard.  You should see logs, drone status and position, and the drone camera feed, among other things.
-
-Have a play around.  When finished, stop everything with `Ctrl+C` in the terminal where you ran `docker-compose`.
-
-## Tutorials
-
-[minimal ROS2 examples](https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber)
