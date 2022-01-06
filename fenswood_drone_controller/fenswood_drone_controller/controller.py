@@ -36,10 +36,6 @@ class FenswoodDroneController(Node):
         self.last_pos = None       # store for last received position message
         self.init_alt = None       # store for global altitude at start
         self.last_alt_rel = None   # store for last altitude relative to start
-        # set up two subscribers, one for vehicle state...
-        state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
-        # ...and the other for global position
-        pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
         # create service clients for long command (datastream requests)...
         self.cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
         # ... for mode changes ...
@@ -56,6 +52,12 @@ class FenswoodDroneController(Node):
         self.control_state = 'init'
         # timer for time spent in each state
         self.state_timer = 0
+
+    def start(self):
+        # set up two subscribers, one for vehicle state...
+        state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
+        # ...and the other for global position
+        pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
         # create a ROS2 timer to run the control actions
         self.timer = self.create_timer(1.0, self.timer_callback)
 
@@ -128,6 +130,7 @@ class FenswoodDroneController(Node):
                 self.get_logger().info('Arming successful')
                 # armed - grab init alt for relative working
                 if self.last_pos:
+                    self.last_alt_rel = 0.0
                     self.init_alt = self.last_pos.altitude
                 # send takeoff command
                 self.takeoff(20.0)
@@ -192,6 +195,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     controller_node = FenswoodDroneController()
+    controller_node.start()
     rclpy.spin(controller_node)
 
 
