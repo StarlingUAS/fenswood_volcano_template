@@ -119,8 +119,8 @@ The `main` function will carry the main thread of our program, including all the
 ```
 The above are two bits of ROS 'magic'.  Every process that talks over ROS is called a 'node' and has to register itself with the rest of the ROS environment and give itself a name.  You will see this name turn up in the logs on Foxglove to identify which message comes from which node.  
 ```
-    state_sub = g_node.create_subscription(State, 'mavros/state', state_callback, 10)
-    pos_sub = g_node.create_subscription(NavSatFix, 'mavros/global_position/global', position_callback, 10)
+    state_sub = g_node.create_subscription(State, '/vehicle_1/mavros/state', state_callback, 10)
+    pos_sub = g_node.create_subscription(NavSatFix, '/vehicle_1/mavros/global_position/global', position_callback, 10)
 ```
 This sets up our subscribers, specifying the message types, topic names, and callback functions for each.
 
@@ -149,7 +149,7 @@ First, above, we wait up to a minute (assuming `wait_for_new_status` takes one s
 ```
 The next step is to request the position data.  MAVROS doesn't give us a direct route to do this, but it does provide a _ROS service_ for us to send any MAVLINK message of our choice.  The code above compiles a service request of type `mavros_msgs/CommandLong` to perform the request.  Following [these instructions](https://ardupilot.org/dev/docs/mavlink-requesting-data.html), we send a MAVLINK [SET_MESSAGE_INTERVAL message, number 511](https://mavlink.io/en/messages/common.html#MAV_CMD_SET_MESSAGE_INTERVAL) using `param1` to identify the message we want, [number 33, GLOBAL_POSITION_INT](https://mavlink.io/en/messages/common.html#GLOBAL_POSITION_INT) and `param2` to set the interval in microseconds.  MAVROS will get upset if the `param` values are not `float` variables, hence the conversions.
 ```
-    cmd_cli = g_node.create_client(CommandLong, 'mavros/cmd/command')
+    cmd_cli = g_node.create_client(CommandLong, '/vehicle_1/mavros/cmd/command')
     while not cmd_cli.wait_for_service(timeout_sec=1.0):
         g_node.get_logger().info('command_int service not available, waiting again...')
     future = cmd_cli.call_async(cmd_req)
@@ -167,7 +167,7 @@ As services have the risk of delaying or even deadlocking your code, ROS gives s
 ```
     mode_req = SetMode.Request()
     mode_req.custom_mode = "GUIDED"
-    mode_cli = g_node.create_client(SetMode, 'mavros/set_mode')
+    mode_cli = g_node.create_client(SetMode, '/vehicle_1/mavros/set_mode')
     while not mode_cli.wait_for_service(timeout_sec=1.0):
         g_node.get_logger().info('set_mode service not available, waiting again...')
     future = mode_cli.call_async(mode_req)
@@ -178,7 +178,7 @@ Changing mode requires another service call.  Hopefully the pattern is emerging:
 ```    
     arm_req = CommandBool.Request()
     arm_req.value = True
-    arm_cli = g_node.create_client(CommandBool, 'mavros/cmd/arming')
+    arm_cli = g_node.create_client(CommandBool, '/vehicle_1/mavros/cmd/arming')
     while not arm_cli.wait_for_service(timeout_sec=1.0):
         g_node.get_logger().info('arming service not available, waiting again...')
     # keep trying until arming detected in state message, or 60 attempts
@@ -202,7 +202,7 @@ The `else:` clause will only run if the `for` loop makes it to its full 60 inter
 ```
     takeoff_req = CommandTOL.Request()
     takeoff_req.altitude = 20.0
-    takeoff_cli = g_node.create_client(CommandTOL, 'mavros/cmd/takeoff')
+    takeoff_cli = g_node.create_client(CommandTOL, '/vehicle_1/mavros/cmd/takeoff')
     while not takeoff_cli.wait_for_service(timeout_sec=1.0):
         g_node.get_logger().info('takeoff service not available, waiting again...')
     future = takeoff_cli.call_async(takeoff_req)
@@ -211,15 +211,15 @@ The `else:` clause will only run if the `for` loop makes it to its full 60 inter
 ```
 Take-off is achieved by yet another service call following a hopefully familiar pattern.  This time the request includes the `altitude` to which the drone should climb, which in this circumstance is always interpreted relative to ground level.
 ```
-    # wait for drone to reach desired altitude, or 60 attempts
-    for try_alt in range(60):
+    # wait for drone to reach desired altitude, or 600 attempts
+    for try_alt in range(600):
         wait_for_new_status()
         g_node.get_logger().info('Climbing, altitude {}m'.format(g_last_alt_rel))
         if g_last_alt_rel > 19.0:
             g_node.get_logger().info('Close enough to flight altitude')
             break
 ```
-The above snippet waits for 60 seconds or for the drone to reach 19m above its arming altitude.  Note the `g_last_alt_rel` variable will be calculated in the `state_callback` function (in its own thread) as the `g_init_alt` variable has been set in the main thread.
+The above snippet waits for 600 seconds or for the drone to reach 19m above its arming altitude.  Note the `g_last_alt_rel` variable will be calculated in the `state_callback` function (in its own thread) as the `g_init_alt` variable has been set in the main thread.
 ```
     # move drone by sending setpoint message
     target_msg = GeoPoseStamped()
@@ -229,7 +229,7 @@ The above snippet waits for 60 seconds or for the drone to reach 19m above its a
 ```
 Time to get the drone moving.  Start by composing a `GeoPoseStamped()` message with a target location.  The correction factor `-50.0` accounts for the differences between different altitude definitions - it's something of a hack but seems to work OK for this short move.
 ```
-    target_pub = g_node.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
+    target_pub = g_node.create_publisher(GeoPoseStamped, '/vehicle_1/mavros/setpoint_position/global', 10)
     wait_for_new_status() # short delay after creating publisher ensures message not lost
     target_pub.publish(target_msg)
     g_node.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(target_msg.pose.position.latitude,
@@ -238,8 +238,8 @@ Time to get the drone moving.  Start by composing a `GeoPoseStamped()` message w
 ```
 And publishing is as simple as this - create a publisher object and then call its `publish` method to send the message.  *Note* the `wait_for_new_status()` call between creating the publisher and using it - I've found that using publishers seem to take a little time to get ready, and if you try and publish straight after creating, the message often vanishes.
 ```
-    # wait for drone to reach desired position, or timeout after 60 attempts
-    for try_arrive in range(60):
+    # wait for drone to reach desired position, or timeout after 600 attempts
+    for try_arrive in range(600):
         wait_for_new_status()
         d_lon = g_last_pos.longitude - target_msg.pose.position.longitude
         d_lat = g_last_pos.latitude - target_msg.pose.position.latitude
@@ -249,7 +249,7 @@ And publishing is as simple as this - create a publisher object and then call it
                 g_node.get_logger().info('Close enough to target delta={},{}'.format(d_lat,d_lon))
                 break
 ```
-The drone should now be moving.  The position callbacks will be running in their own thread, so I can just access the last received message in the `g_last_pos` global.  When both numbers match to four decimal places (or on timeout after 60 seconds) I declare the target reached and allow the code to move on.
+The drone should now be moving.  The position callbacks will be running in their own thread, so I can just access the last received message in the `g_last_pos` global.  When both numbers match to four decimal places (or on timeout after 600 seconds) I declare the target reached and allow the code to move on.
 ```
     mode_req.custom_mode = "RTL"
     future = mode_cli.call_async(mode_req)
