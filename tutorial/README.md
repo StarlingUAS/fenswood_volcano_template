@@ -2,20 +2,26 @@
 
 ## Introduction
 
-Inspired by the [minimal ROS2 examples](https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber), this tutorial takes you through several iterations of code with almost the same functionality.  A drone takes off, moves to a target location, and then flies home.  In the later `perception` example, some very basic information is gathered from its camera image.  Together, these examples give you all the building blocks you will need to carry out the project.
+You will learn how to write code in Python to interface with the (simulated) drone using ROS.  In particular, you will learn the newer ROS2 methods, which offer improved security and scalability.  On the way, you will learn the fundamentals of controlling a drone through a standard autopilot.
 
-> You can also add your own functionality.  As well as the blocks of a minimum working solution, the examples show you how to add ROS packages and Python libraries.  You can use this facility to exploit some of the many third-party packages and libraries available in ROS and Python.
+> You will also need to do little bits of Linux and Docker 'magic' to make the application work.  You are not expected to master these aspects: ask for help if they cause problems.  The primary learning objectives here are drone control, Python and ROS.  If you are interested in more details, see the [Starling overview](starling.md).
 
-The template is built on the [Starling](https://github.com/StarlingUAS) framework which combines open-source components to provide a realistic, cross-platform simulation for drone flight:
- - [Gazebo](http://gazebosim.org/), a physical and visual simulation package
- - [Ardupilot](https://ardupilot.org/), a free autopilot software with [MAVLINK](https://mavlink.io/en/) interfacing and [simulation](https://ardupilot.org/copter/docs/common-simulation.html) capability
- - [ROS](https://www.ros.org/), a popular software framework for robot interfacing, plus the [MAVROS](http://wiki.ros.org/mavros) package for connecting MAVLINK drones to ROS. 
- - [OpenCV](https://opencv.org/), an image processing library with Python support
- - [Docker](https://www.docker.com/), a system for packaging and deploying 
+In the examples, a drone takes off, moves to a target location, and then flies home.  In the later `perception` example, some very basic information is gathered from its camera image.  Together, these examples give you all the building blocks you will need to carry out the project. 
 
-> Surely there's a simpler way?  Almost certainly, but you wouldn't learn so much.  These are the standard tools of the robotics trade, and while it'll take you a while to learn them, the skills you get will go far beyond this project.
+## How to use this tutorial
+
+Inspired by the [minimal ROS2 examples](https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber), this tutorial takes you through several iterations of code with almost the same functionality.  A full working example is provided in each case with a detailed description of the code.  The section below shows the contents and learning obectives for each stage of the tutorial.  You are advised to simply work through from start to finish _but_ you might find some stages easier than others, depending on your past experience.
+
+Each tutorial stage comes with some exercises for you to add to the code yourself.  To do the exercises, first use `git checkout <branch>` to activate the relevant branch of the repository, then edit the appropriate files.  To test your solutions, the simulation is always started using `docker-compose up --build` and then stopped using `Ctrl+C`.  Use the terminal window output, foxglove studio, or the Docker Desktop (Windows and Mac only) to inspect the results.
+
+> Don't forget the `--build`.  Otherwise, your changes don't get built into the simulation, and you're just running the same code over and over.
+
+## Contents
+
+1. [Drone Control](drone_control.md)
+    - Learn the key steps in flying a drone using Ardupilot and ROS
  
 
 
-To simplify changing, each iteration lives in a different `git` branch
+
 
