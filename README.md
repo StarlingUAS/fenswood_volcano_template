@@ -29,7 +29,11 @@ mavros_1           | [run_ros1.sh-1] [ERROR] [1641487809.032953700]: FCU: PreArm
 controller_1       | [image_processor-2] [INFO] [1641487809.057483100] [vehicle_1.image_processor]: Got an image of 480 x 640
 ```
 
+#### Watching it fly
+
 If that's happening, open a web browser and open [http://localhost:8080](http://localhost:8080).  You should see a Gazebo window with a green field, a couple of cones, and a drone.  Watch long enough and the drone should take-off.  Watch even longer and it should return.
+
+#### Introspecting ROS
 
 Open another web browser and navigate to [studio.foxglove.dev](studio.foxglove.dev).  Select `Open Connection` and enter `ws://localhost:9090` in the URL box, if it's not already there.  This gets you into Foxglove, a powerful dashboard for ROS.  To get started, click the `Layouts` button (second down on the left hand menu) and then the `Import Layout` button at the top of the panel that opens.  Navigate to your `fenswood_volcano_template` folder and select `fenswood_example.json`.  Click the `Layouts` button again to close the panel and maximize the rest of the dashboard.  You should see logs, drone status and position, and the drone camera feed, among other things.
 
