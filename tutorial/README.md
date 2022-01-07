@@ -16,6 +16,8 @@ Each tutorial stage comes with some exercises for you to add to the code yoursel
 
 > Don't forget the `--build`.  Otherwise, your changes don't get built into the simulation, and you're just running the same code over and over.
 
+There are countless links and remarks in the tutorials.  These provide extra information, background and sources, but are not essential reading.  Follow them if you are interested, but do not feel compelled to digest each one.
+
 ## Contents
 
 1. [Drone control](drone_control.md)

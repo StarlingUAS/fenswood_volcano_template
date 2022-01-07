@@ -100,59 +100,87 @@ def wait_for_new_status():
                 break
             rclpy.spin_once(g_node)
 ```
-Our simulation runs in real time and the controller will sometimes need to wait for things to happen.  I could have just used `time.sleep(1)` from the `time` Python library.  
+Our simulation runs in real time and the controller will sometimes need to wait for things to happen.  Sadly we can't just use `time.sleep(1)` from the `time` Python library: this doesn't play nicely with ROS threads and ends up blocking all the callbacks as well.  Instead, we must use ROS `spin` methods to give up the time to the other threads.  Since we do this several times in the script, the function `wait_for_new_status` brings it all together.
+
+The `if g_last_state:` line breaks it into two clauses.  If true, this means we have received a status message before.  The function grabs the seconds value of the timestamp of the last message in the variable `last_stamp`.  Then the `for` loop runs until a new message with a later timestamp has been received.  The `spin_once()` command waits until one of the other threads has done some work.  If we had never received a message before, the first `if g_last_state:` fails, and instead we just keep spinning until any message has been received.
+
+In testing, the state messages come in at 1Hz, so this function waits for about 1s.  Be careful relying on that though: if a ground station were to request state messages at a different rate, that delay time could change.
+
+> I could have done this with a `while` loop, but the `for` loop is better practice for real world control, as it means the program cannot hang forever and will eventually time out.  However, I have failed to handle this timeout (or any of the others in the example) properly: the programme will just carry on.  Python provides a lovely `else` syntax (see [documentation](https://docs.python.org/3/tutorial/controlflow.html#break-and-continue-statements-and-else-clauses-on-loops)) that would handle this very elegantly.
+
 ```
 def main(args=None):
     global g_node, g_init_alt
-    
+```
+The `main` function will carry the main thread of our program, including all the decision-making in this example.  The `global` line means we will be writing to a couple of variables, as discussed already.  
+```
     rclpy.init(args=args)
-
     g_node = rclpy.create_node('example_controller')
-
-    # set up two subscribers, one for vehicle state...
+```
+The above are two bits of ROS 'magic'.  Every process that talks over ROS is called a 'node' and has to register itself with the rest of the ROS environment and give itself a name.  You will see this name turn up in the logs on Foxglove to identify which message comes from which node.  
+```
     state_sub = g_node.create_subscription(State, 'mavros/state', state_callback, 10)
-
-    # ...and the other for global position
     pos_sub = g_node.create_subscription(NavSatFix, 'mavros/global_position/global', position_callback, 10)
+```
+This sets up our subscribers, specifying the message types, topic names, and callback functions for each.
 
-    # first wait for the system status to become 3 "standby"
-    # see https://mavlink.io/en/messages/common.html#MAV_STATE
+> Don't worry about the `10` for now.
+
+These lines create the two additional threads besides the main one, and once they've been executed, callbacks can start running.
+
+Now the script just works through the [steps described in the Drone control tutorial](drone_control.md#example-steps)
+```
     for try_standby in range(60):
         wait_for_new_status()
         if g_last_state.system_status==3:
             g_node.get_logger().info('Drone ready for flight')
             break 
+```
+First, above, we wait up to a minute (assuming `wait_for_new_status` takes one second) to reach the 'standby' status (3).
 
+> If we reach one minute and standby hasn't been reached, the code just moves on anyway.
+```
     # send command to request regular position updates
-    cmd_cli = g_node.create_client(CommandLong, 'mavros/cmd/command')
-    while not cmd_cli.wait_for_service(timeout_sec=1.0):
-        g_node.get_logger().info('command_int service not available, waiting again...')
     cmd_req = CommandLong.Request()
     cmd_req.command = 511
     cmd_req.param1 = float(33)  # msg ID for position is 33 \
                                 # https://mavlink.io/en/messages/common.html#GLOBAL_POSITION_INT
     cmd_req.param2 = float(1000000)    # 1000000 micro-second interval : 1Hz rate
+```
+The next step is to request the position data.  MAVROS doesn't give us a direct route to do this, but it does provide a _ROS service_ for us to send any MAVLINK message of our choice.  The code above compiles a service request of type `mavros_msgs/CommandLong` to perform the request.  Following [these instructions](https://ardupilot.org/dev/docs/mavlink-requesting-data.html), we send a MAVLINK [SET_MESSAGE_INTERVAL message, number 511](https://mavlink.io/en/messages/common.html#MAV_CMD_SET_MESSAGE_INTERVAL) using `param1` to identify the message we want, [number 33, GLOBAL_POSITION_INT](https://mavlink.io/en/messages/common.html#GLOBAL_POSITION_INT) and `param2` to set the interval in microseconds.  MAVROS will get upset if the `param` values are not `float` variables, hence the conversions.
+```
+    cmd_cli = g_node.create_client(CommandLong, 'mavros/cmd/command')
+    while not cmd_cli.wait_for_service(timeout_sec=1.0):
+        g_node.get_logger().info('command_int service not available, waiting again...')
     future = cmd_cli.call_async(cmd_req)
     rclpy.spin_until_future_complete(g_node, future)    # wait for response
     g_node.get_logger().info('Requested position stream')
+```
+*Services* are [another way of communicating in ROS](https://docs.ros.org/en/foxy/Tutorials/Services/Understanding-ROS2-Services.html), an alternative to topic publishing and subscribing.  Services are to topics what phone calls are to text messages.  A service is _called_ by a client and a server then _responds_.
 
-    # now change mode to GUIDED
+In our case, we learn [from the documentation](http://wiki.ros.org/mavros#mavros.2FPlugins.Services) that MAVROS provides the function we need as a service named `\vehicle_1\mavros\cmd\command` with defined message type `mavros_msgs/CommandLong`.  Having constructed our `CommandLong` in the previous code chunk, we start here by creating a 'client' for calling the service named `cmd_cli` and then wait to make sure the corresponding server is ready using `while not cmd_cli.wait_for_service()`.
+
+As services have the risk of delaying or even deadlocking your code, ROS gives some rather complicated mechanisms for calling them.  The `call_async()` command starts (yet) another thread to wait for the response, and all I do is use `spin_until_future_complete()` to just wait for the response and then log that it finished.  The response data would be in the `future` object after the `spin` is done.  Lazily, I just ignore it, assume it worked, and move on.
+
+> Generally, I am not a fan of ROS services.  ROS2 has had to make them [rather complicated](https://docs.ros.org/en/foxy/How-To-Guides/Sync-Vs-Async.html) to overcome the problems of deadlocks, when nodes end up waiting for each other to respond to services.  I can see the advantage of having explicit responses to some messages, but the associated complexity is a pain.  The old [Parrot ARDrone ROS drivers](http://wiki.ros.org/ardrone_autonomy) managed to do absolutely everything with just a few topics and no services.  Meanwhile, the newer [ROS actions](https://docs.ros.org/en/foxy/Tutorials/Understanding-ROS2-Actions.html) provide a much better interface for call-and-response behaviour.  Lots of really useful tools like [py_trees_ros](https://github.com/splintered-reality/py_trees_ros) support topics and actions but not services.  Still, we are lucky that others have produced MAVROS for us, so it's worth a little pain to accommodate their choices.  
+
+```
+    mode_req = SetMode.Request()
+    mode_req.custom_mode = "GUIDED"
     mode_cli = g_node.create_client(SetMode, 'mavros/set_mode')
     while not mode_cli.wait_for_service(timeout_sec=1.0):
         g_node.get_logger().info('set_mode service not available, waiting again...')
-    mode_req = SetMode.Request()
-    mode_req.custom_mode = "GUIDED"
     future = mode_cli.call_async(mode_req)
     rclpy.spin_until_future_complete(g_node, future)    # wait for response
     g_node.get_logger().info('Request sent for GUIDED mode.')
-    
-    # next, try to arm the drone
+```
+Changing mode requires another service call.  Hopefully the pattern is emerging: build a service request `mode_req`, then a client `mode_cli`, wait for the service, call it, `spin_until_future_complete` to wait for completion, and then move on.  None of the service calls in this tutorial ever check the response.  If necessary, I you could verify the mode change by looking at the state message. 
+```    
+    arm_req = CommandBool.Request()
+    arm_req.value = True
     arm_cli = g_node.create_client(CommandBool, 'mavros/cmd/arming')
     while not arm_cli.wait_for_service(timeout_sec=1.0):
         g_node.get_logger().info('arming service not available, waiting again...')
-    # build the request
-    arm_req = CommandBool.Request()
-    arm_req.value = True
     # keep trying until arming detected in state message, or 60 attempts
     for try_arm in range(60):
         future = arm_cli.call_async(arm_req)
@@ -167,19 +195,22 @@ def main(args=None):
             break
     else:
         g_node.get_logger().error('Failed to arm')
+```
+Arming the drone is done by calling yet another service.  Again it begins by constructing the `arm_req` request and the `arm_cli` client.  However, since we anticipate arming to fail while the GPS _etc_ is still warming up, the code here repeats for up to 60 attempts, calling the service using `call_async`, doing a `spin_until_future_complete` until the service completes, waiting for a new status message, and only stopping via `break` if that status shows `armed` to be `True`.  If arming succeeds, the code also grabs the current altitude in `g_init_alt` to enable relative altitude calculation.
 
-    # take off and climb to 20.0m at current location
+The `else:` clause will only run if the `for` loop makes it to its full 60 interations without terminating via a break.  It therefore handles the case where arming times out, sending an `error` message to the log.
+```
+    takeoff_req = CommandTOL.Request()
+    takeoff_req.altitude = 20.0
     takeoff_cli = g_node.create_client(CommandTOL, 'mavros/cmd/takeoff')
     while not takeoff_cli.wait_for_service(timeout_sec=1.0):
         g_node.get_logger().info('takeoff service not available, waiting again...')
-    # build the request
-    takeoff_req = CommandTOL.Request()
-    takeoff_req.altitude = 20.0
-    # only call once - seems to work OK
     future = takeoff_cli.call_async(takeoff_req)
     rclpy.spin_until_future_complete(g_node, future)
     g_node.get_logger().info('Takeoff request sent.')
-
+```
+Take-off is achieved by yet another service call following a hopefully familiar pattern.  This time the request includes the `altitude` to which the drone should climb, which in this circumstance is always interpreted relative to ground level.
+```
     # wait for drone to reach desired altitude, or 60 attempts
     for try_alt in range(60):
         wait_for_new_status()
@@ -187,19 +218,26 @@ def main(args=None):
         if g_last_alt_rel > 19.0:
             g_node.get_logger().info('Close enough to flight altitude')
             break
-
+```
+The above snippet waits for 60 seconds or for the drone to reach 19m above its arming altitude.  Note the `g_last_alt_rel` variable will be calculated in the `state_callback` function as the `g_init_alt` variable has been set in the main thread.
+```
     # move drone by sending setpoint message
-    target_pub = g_node.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
-    wait_for_new_status() # short delay after creating publisher ensures message not lost
     target_msg = GeoPoseStamped()
     target_msg.pose.position.latitude = 51.423
     target_msg.pose.position.longitude = -2.671
-    target_msg.pose.position.altitude = g_init_alt - 30.0 # unexplained correction factor
+    target_msg.pose.position.altitude = g_init_alt + 20.0 - 50.0 # MSL/ellipsoid correction
+```
+Time to get the drone moving.  Start by composing a `GeoPoseStamped()` message with a target location.  The correction factor `-50.0` accounts for the differences
+```
+    target_pub = g_node.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
+    wait_for_new_status() # short delay after creating publisher ensures message not lost
     target_pub.publish(target_msg)
     g_node.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(target_msg.pose.position.latitude,
                                                                            target_msg.pose.position.longitude,
                                                                            target_msg.pose.position.altitude)) 
+```
 
+```
     # wait for drone to reach desired position, or timeout after 60 attempts
     for try_arrive in range(60):
         wait_for_new_status()

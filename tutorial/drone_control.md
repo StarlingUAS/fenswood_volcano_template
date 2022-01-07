@@ -35,7 +35,9 @@ These are the steps performed by the example code.  All versions use these same 
 
 > If you don't take off within a few seconds of arming, the drone will automatically disarm, for safety reasons.
 
-6. Climb, waiting for the drone to get close to the target altitude.  Use the informaion on the `/vehicle_1/mavros/global_position` [topics](http://wiki.ros.org/mavros#mavros.2FPlugins.global_position) to monitor progress.
+6. Climb, waiting for the drone to get close to the target altitude.  Use the information on the `/vehicle_1/mavros/global_position` [topics](http://wiki.ros.org/mavros#mavros.2FPlugins.global_position) to monitor progress.
+
+> The drone will accept a new setpoint at any altitude.  However, for the safety of those likely to be near the takeoff point, it is undesirable for the drone to do anything other than climb straight up at first.
 
 > Altitude is a surprisingly complex topic.  It can be expressed relative to mean sea level, to a standardized Earth shape model, to the location where you armed the drone, or to the local atmosphere using air pressure.  These can be many tens of metres different to each other.  [Solutions are available](http://wiki.ros.org/mavros#mavros.2FPlugins.Avoiding_Pitfalls_Related_to_Ellipsoid_Height_and_Height_Above_Mean_Sea_Level) but I find them rather complicated.  Instead I recommend pragmatic solutions like using relative information and calculated correction factors, as we are not flying far.  *Note* there is also a helpful-looking `/vehicle_1/mavros/global_position/rel_alt` topic that I have not tried yet.
 
