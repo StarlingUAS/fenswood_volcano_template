@@ -137,7 +137,7 @@ def main(args=None):
     g_node.get_logger().info('Takeoff request sent.')
 
     # wait for drone to reach desired altitude, or 60 attempts
-    for try_alt in range(60):
+    for try_alt in range(600):
         wait_for_new_status()
         g_node.get_logger().info('Climbing, altitude {}m'.format(g_last_alt_rel))
         if g_last_alt_rel > 19.0:
@@ -157,7 +157,7 @@ def main(args=None):
                                                                            target_msg.pose.position.altitude)) 
 
     # wait for drone to reach desired position, or timeout after 60 attempts
-    for try_arrive in range(60):
+    for try_arrive in range(600):
         wait_for_new_status()
         d_lon = g_last_pos.longitude - target_msg.pose.position.longitude
         d_lat = g_last_pos.latitude - target_msg.pose.position.latitude
