@@ -55,7 +55,9 @@ These are the steps performed by the example code.  All versions use these same 
 
 ## Exercises
 
+All exercises work using the `old_school` code so run `git checkout old_school` first.
 
+1. Run the simulation using `docker-compose up --build` and watch it progress using <a target="_blank" href="https://studio.foxglove.dev">https://studio.foxglove.dev</a>.  Add a 
 
 [Back to tutorial contents](README.md#contents)
 
