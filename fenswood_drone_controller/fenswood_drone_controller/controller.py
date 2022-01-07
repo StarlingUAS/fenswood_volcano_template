@@ -66,10 +66,10 @@ def main(args=None):
     g_node = rclpy.create_node('example_controller')
 
     # set up two subscribers, one for vehicle state...
-    state_sub = g_node.create_subscription(State, 'mavros/state', state_callback, 10)
+    state_sub = g_node.create_subscription(State, '/vehicle_1/mavros/state', state_callback, 10)
 
     # ...and the other for global position
-    pos_sub = g_node.create_subscription(NavSatFix, 'mavros/global_position/global', position_callback, 10)
+    pos_sub = g_node.create_subscription(NavSatFix, '/vehicle_1/mavros/global_position/global', position_callback, 10)
 
     # first wait for the system status to become 3 "standby"
     # see https://mavlink.io/en/messages/common.html#MAV_STATE
@@ -80,35 +80,34 @@ def main(args=None):
             break 
 
     # send command to request regular position updates
-    cmd_cli = g_node.create_client(CommandLong, 'mavros/cmd/command')
-    while not cmd_cli.wait_for_service(timeout_sec=1.0):
-        g_node.get_logger().info('command_int service not available, waiting again...')
     cmd_req = CommandLong.Request()
     cmd_req.command = 511
     cmd_req.param1 = float(33)  # msg ID for position is 33 \
                                 # https://mavlink.io/en/messages/common.html#GLOBAL_POSITION_INT
     cmd_req.param2 = float(1000000)    # 1000000 micro-second interval : 1Hz rate
+    cmd_cli = g_node.create_client(CommandLong, '/vehicle_1/mavros/cmd/command')
+    while not cmd_cli.wait_for_service(timeout_sec=1.0):
+        g_node.get_logger().info('command_int service not available, waiting again...')
     future = cmd_cli.call_async(cmd_req)
     rclpy.spin_until_future_complete(g_node, future)    # wait for response
     g_node.get_logger().info('Requested position stream')
 
     # now change mode to GUIDED
-    mode_cli = g_node.create_client(SetMode, 'mavros/set_mode')
-    while not mode_cli.wait_for_service(timeout_sec=1.0):
-        g_node.get_logger().info('set_mode service not available, waiting again...')
     mode_req = SetMode.Request()
     mode_req.custom_mode = "GUIDED"
+    mode_cli = g_node.create_client(SetMode, '/vehicle_1/mavros/set_mode')
+    while not mode_cli.wait_for_service(timeout_sec=1.0):
+        g_node.get_logger().info('set_mode service not available, waiting again...')
     future = mode_cli.call_async(mode_req)
     rclpy.spin_until_future_complete(g_node, future)    # wait for response
     g_node.get_logger().info('Request sent for GUIDED mode.')
     
     # next, try to arm the drone
-    arm_cli = g_node.create_client(CommandBool, 'mavros/cmd/arming')
-    while not arm_cli.wait_for_service(timeout_sec=1.0):
-        g_node.get_logger().info('arming service not available, waiting again...')
-    # build the request
     arm_req = CommandBool.Request()
     arm_req.value = True
+    arm_cli = g_node.create_client(CommandBool, '/vehicle_1/mavros/cmd/arming')
+    while not arm_cli.wait_for_service(timeout_sec=1.0):
+        g_node.get_logger().info('arming service not available, waiting again...')
     # keep trying until arming detected in state message, or 60 attempts
     for try_arm in range(60):
         future = arm_cli.call_async(arm_req)
@@ -125,12 +124,11 @@ def main(args=None):
         g_node.get_logger().error('Failed to arm')
 
     # take off and climb to 20.0m at current location
-    takeoff_cli = g_node.create_client(CommandTOL, 'mavros/cmd/takeoff')
-    while not takeoff_cli.wait_for_service(timeout_sec=1.0):
-        g_node.get_logger().info('takeoff service not available, waiting again...')
-    # build the request
     takeoff_req = CommandTOL.Request()
     takeoff_req.altitude = 20.0
+    takeoff_cli = g_node.create_client(CommandTOL, '/vehicle_1/mavros/cmd/takeoff')
+    while not takeoff_cli.wait_for_service(timeout_sec=1.0):
+        g_node.get_logger().info('takeoff service not available, waiting again...')
     # only call once - seems to work OK
     future = takeoff_cli.call_async(takeoff_req)
     rclpy.spin_until_future_complete(g_node, future)
@@ -145,12 +143,12 @@ def main(args=None):
             break
 
     # move drone by sending setpoint message
-    target_pub = g_node.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
-    wait_for_new_status() # short delay after creating publisher ensures message not lost
     target_msg = GeoPoseStamped()
     target_msg.pose.position.latitude = 51.423
     target_msg.pose.position.longitude = -2.671
     target_msg.pose.position.altitude = g_init_alt - 30.0 # unexplained correction factor
+    target_pub = g_node.create_publisher(GeoPoseStamped, '/vehicle_1/mavros/setpoint_position/global', 10)
+    wait_for_new_status() # short delay after creating publisher ensures message not lost
     target_pub.publish(target_msg)
     g_node.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(target_msg.pose.position.latitude,
                                                                            target_msg.pose.position.longitude,
