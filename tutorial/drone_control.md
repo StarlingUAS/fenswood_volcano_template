@@ -57,7 +57,15 @@ These are the steps performed by the example code.  All versions use these same 
 
 All exercises work using the `old_school` code so run `git checkout old_school` first.
 
-1. Run the simulation using `docker-compose up --build` and watch it progress using <a target="_blank" href="https://studio.foxglove.dev">https://studio.foxglove.dev</a>.  Add a 
+1. Run the simulation using `docker-compose up --build` and watch it progress using <a target="_blank" href="https://studio.foxglove.dev">https://studio.foxglove.dev</a>.  Use the teleoperation buttons (the little gamepad-like panels provided in the example layout, described in [Introspecting ROS](../README.md#introspecting-ros)) to interrupt the flight during climb or movement.  Play around with the teleoperation buttons to explore how they work, with careful attention to the relevant frame of reference.  Edit the panel settings and see what difference they make.
+
+2. Interrupt a simulation again and add a `Publisher` panel in Foxglove.  Publish messages to the `/vehicle_1/mavros/setpoint_velocity/cmd_vel_unstamped` topic and see how the drone responds.
+
+3. Interrupt a simulation and use a `Publisher` panel to send messages to the `/vehicle_1/mavros/setpoint_position/global` topic.  Try sending different latitude and longitude locations from the project briefing document.
+
+> *Note* due to a bug somewhere, you'll need to delete the `seq` line in the publisher panel to get this to work.  
+
+4. Interrupt a simulation and use a combination of the gamepad and the setpoint publisher to land the drone at or near the target.  Use the `/vehicle_1/gimbal_tilt_cmd` publisher to move the camera, with `0` being horizontal and `1.57` being straight downwards.
 
 [Back to tutorial contents](README.md#contents)
 
