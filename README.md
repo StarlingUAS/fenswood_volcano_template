@@ -31,11 +31,11 @@ controller_1       | [image_processor-2] [INFO] [1641487809.057483100] [vehicle_
 
 #### Watching it fly
 
-If that's happening, open a web browser and open [http://localhost:8080](http://localhost:8080).  You should see a Gazebo window with a green field, a couple of cones, and a drone.  Watch long enough and the drone should take-off.  Watch even longer and it should return.
+If that's happening, open a web browser and open <a target="_blank" href="http://localhost:8080">http://localhost:8080</a>.  You should see a Gazebo window with a green field, a couple of cones, and a drone.  Watch long enough and the drone should take-off.  Watch even longer and it should return.
 
 #### Introspecting ROS
 
-Open another web browser and navigate to [studio.foxglove.dev](studio.foxglove.dev).  Select `Open Connection` and enter `ws://localhost:9090` in the URL box, if it's not already there.  This gets you into Foxglove, a powerful dashboard for ROS.  To get started, click the `Layouts` button (second down on the left hand menu) and then the `Import Layout` button at the top of the panel that opens.  Navigate to your `fenswood_volcano_template` folder and select `fenswood_example.json`.  Click the `Layouts` button again to close the panel and maximize the rest of the dashboard.  You should see logs, drone status and position, and the drone camera feed, among other things.
+Open another web browser and navigate to <a target="_blank" href="https://studio.foxglove.dev">https://studio.foxglove.dev</a>.  Select `Open Connection` and enter `ws://localhost:9090` in the URL box, if it's not already there.  This gets you into Foxglove, a powerful dashboard for ROS.  To get started, click the `Layouts` button (second down on the left hand menu) and then the `Import Layout` button at the top of the panel that opens.  Navigate to your `fenswood_volcano_template` folder and select `fenswood_example.json`.  Click the `Layouts` button again to close the panel and maximize the rest of the dashboard.  You should see logs, drone status and position, and the drone camera feed, among other things.
 
 Have a play around.  When finished, stop everything with `Ctrl+C` in the terminal where you ran `docker-compose`.
 

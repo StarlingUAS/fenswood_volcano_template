@@ -1,5 +1,7 @@
 # Controlling an Ardupilot drone using MAVLINK over ROS
 
+[Back to tutorial contents](README.md#contents)
+
 ## Introduction
 
 The application includes a representation of the [Ardupilot copter](https://ardupilot.org/copter/docs/introduction.html) autopilot, a free open-source product in common use in aerial robotics both commercially and in research.  Instead of running on a physical autopilot like the [Pixhawk](https://pixhawk.org/), the application uses its [simulation capability](https://ardupilot.org/copter/docs/common-simulation.html) to run it on your computer.  Hence you must learn the 'fly the autopilot'.  
@@ -8,7 +10,7 @@ The application includes a representation of the [Ardupilot copter](https://ardu
 
 ## Example steps
 
-These are the steps performed by the example code.  All versions use these same steps.  To follow along, I recommend running the `old_school` version (run `git checkout old_school` then `docker-compose up --build`) and then using foxglove (see [Introspecting ROS](../README.md#introspecting-ros))
+These are the steps performed by the example code.  All versions use these same steps.  To follow along, I recommend running the `old_school` version (run `git checkout old_school` then `docker-compose up --build`) and then using <a target="_blank" href="https://studio.foxglove.dev">foxglove</a> (see [Introspecting ROS](../README.md#introspecting-ros)).  You should see reports on the ROS logs about progress through the steps.
 
  1. Wait for the autopilot to initialize, indicated by a `system_status` value of 3, [`MAV_STATE_STANDBY`](https://mavlink.io/en/messages/common.html#MAV_STATE_STANDBY), on the [`/vehicle_1/mavros/state`](http://wiki.ros.org/mavros#mavros.2FPlugins.sys_status) ROS topic.
 
@@ -48,3 +50,12 @@ These are the steps performed by the example code.  All versions use these same 
 9. Send the drone back to land at its take-off location, by changing to `RTL` mode.
 
 > The example just stops after sending the `RTL` mode command.  
+
+[Back to tutorial contents](README.md#contents)
+
+## Exercises
+
+
+
+[Back to tutorial contents](README.md#contents)
+
