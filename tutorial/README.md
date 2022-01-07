@@ -18,8 +18,29 @@ Each tutorial stage comes with some exercises for you to add to the code yoursel
 
 ## Contents
 
-1. [Drone Control](drone_control.md)
-    - Learn the key steps in flying a drone using Ardupilot and ROS
+1. [Drone control](drone_control.md)
+    - Learn the key steps in flying a drone using Ardupilot and ROS.
+
+2. [Old school](old_school.md)
+    - Learn how to control the drone using ROS from Python
+
+3. [A simple class](simple_class.md)
+    - Learn how to use a Python class as a better drone controller
+
+4. [A better class](modular.md)
+    - Learn how to use a more modular programming approach to improve your Python class
+
+5. [Finite state machine](finite_state.md)
+    - Learn how to use a finite state machine as your decision-making engine
+
+6. [ROS timer](ros_timer.md)
+    - Learn how to use ROS2 built-in timer to manage the finite state machine execution
+
+7. [Perception](perception.md)
+    - Learn how to add a second process or 'node' to the ROS application (ROS)
+    - Learn how to install a third-party library in the Volcano application (Docker)
+    - Learn how to access the camera image ready for vision processing (OpenCV)
+
  
 
 
