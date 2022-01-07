@@ -219,7 +219,7 @@ Take-off is achieved by yet another service call following a hopefully familiar 
             g_node.get_logger().info('Close enough to flight altitude')
             break
 ```
-The above snippet waits for 60 seconds or for the drone to reach 19m above its arming altitude.  Note the `g_last_alt_rel` variable will be calculated in the `state_callback` function as the `g_init_alt` variable has been set in the main thread.
+The above snippet waits for 60 seconds or for the drone to reach 19m above its arming altitude.  Note the `g_last_alt_rel` variable will be calculated in the `state_callback` function (in its own thread) as the `g_init_alt` variable has been set in the main thread.
 ```
     # move drone by sending setpoint message
     target_msg = GeoPoseStamped()
@@ -227,7 +227,7 @@ The above snippet waits for 60 seconds or for the drone to reach 19m above its a
     target_msg.pose.position.longitude = -2.671
     target_msg.pose.position.altitude = g_init_alt + 20.0 - 50.0 # MSL/ellipsoid correction
 ```
-Time to get the drone moving.  Start by composing a `GeoPoseStamped()` message with a target location.  The correction factor `-50.0` accounts for the differences
+Time to get the drone moving.  Start by composing a `GeoPoseStamped()` message with a target location.  The correction factor `-50.0` accounts for the differences between different altitude definitions - it's something of a hack but seems to work OK for this short move.
 ```
     target_pub = g_node.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
     wait_for_new_status() # short delay after creating publisher ensures message not lost
@@ -236,7 +236,7 @@ Time to get the drone moving.  Start by composing a `GeoPoseStamped()` message w
                                                                            target_msg.pose.position.longitude,
                                                                            target_msg.pose.position.altitude)) 
 ```
-
+And publishing is as simple as this - create a publisher object and then call its `publish` method to send the message.  *Note* the `wait_for_new_status()` call between creating the publisher and using it - I've found that using publishers seem to take a little time to get ready, and if you try and publish straight after creating, the message often vanishes.
 ```
     # wait for drone to reach desired position, or timeout after 60 attempts
     for try_arrive in range(60):
@@ -248,18 +248,37 @@ Time to get the drone moving.  Start by composing a `GeoPoseStamped()` message w
             if abs(d_lat) < 0.0001:
                 g_node.get_logger().info('Close enough to target delta={},{}'.format(d_lat,d_lon))
                 break
-
-    # return home and land
+```
+The drone should now be moving.  The position callbacks will be running in their own thread, so I can just access the last received message in the `g_last_pos` global.  When both numbers match to four decimal places (or on timeout after 60 seconds) I declare the target reached and allow the code to move on.
+```
     mode_req.custom_mode = "RTL"
     future = mode_cli.call_async(mode_req)
     rclpy.spin_until_future_complete(g_node, future)    # wait for response
     g_node.get_logger().info('Request sent for RTL mode.')
-    
+```
+The final step is to send the drone back home.  The mode request `mode_req` and mode client `mode_cli` are already set up from earlier, and the `set_mode` service has already been proven available with an earlier `wait_for_service()` so there's no need for another.  I just change the desired mode in `mode_req`, call the service again and do another `spin_until_future_complete` to let it finish.
+```
     # now just serve out the time until process killed
     while rclpy.ok():
         rclpy.spin_once(g_node)
-
-
+```
+The control task is complete now.  I _ought_ to monitor the drone's progress until it lands and exit the program cleanly.   Lazily, I just keep executing `spin_once()` to keep the callbacks running until `rclpy.ok()` fails, which happens when the application is killed with a `Ctrl-C`.
+```
 if __name__ == '__main__':
     main()
 ```
+This last bit above is another 'Python thing'.  It detects the special case where the script is executed as a program (instead of just imported as a module) and directs execution to the `main()` function.  I'm not even sure it's needed with ROS2 but it's habit.
+
+## Exercises
+
+1. Change where the drone flies, perhaps trying some of the locations provided in the project briefing document.
+
+2. Add a second location, so the drone flies to the first location and then on to a second.
+
+3. Add a request for [message 32, LOCAL_POSITION_NED](https://mavlink.io/en/messages/common.html#LOCAL_POSITION_NED) to be sent.  Observe what happens on foxglove looking at topic `/vehicle_1/mavros/local_position/pose`.
+
+4. Add a subscriber to `/vehicle_1/mavros/local_position/pose` and print the local information to the log.
+
+5. Instead of sending the drone back to the starting location, trying using `Land` mode to land it at the target location.
+
+6. Add a final stage to the program that checks the drone makes it back to the ground, exits gracefully if it does, or logs an error if it takes too long.
