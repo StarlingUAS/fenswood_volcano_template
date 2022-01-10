@@ -275,9 +275,7 @@ This last bit above is another 'Python thing'.  It detects the special case wher
 
 2. Add a second location, so the drone flies to the first location and then on to a second.
 
-3. Add a request for [message 32, LOCAL_POSITION_NED](https://mavlink.io/en/messages/common.html#LOCAL_POSITION_NED) to be sent.  Observe what happens on foxglove looking at topic `/vehicle_1/mavros/local_position/pose`.
-
-4. Add a subscriber to `/vehicle_1/mavros/local_position/pose` and print the local information to the log.
+3. Add a request for [message 32, LOCAL_POSITION_NED](https://mavlink.io/en/messages/common.html#LOCAL_POSITION_NED) to be sent.  Observe what happens on foxglove looking at topic `/vehicle_1/mavros/local_position/pose`.  In the code, add a subscriber to `/vehicle_1/mavros/local_position/pose` and print the local information to the log.
 
 5. Instead of sending the drone back to the starting location, trying using `Land` mode to land it at the target location.
 
