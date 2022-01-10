@@ -10,13 +10,13 @@ In the examples, a drone takes off, moves to a target location, and then flies h
 
 ## How to use this tutorial
 
-Inspired by the [minimal ROS2 examples](https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber), this tutorial takes you through several iterations of code with almost the same functionality.  A full working example is provided in each case with a detailed description of the code.  The section below shows the contents and learning obectives for each stage of the tutorial.  You are advised to simply work through from start to finish _but_ you might find some stages easier than others, depending on your past experience.
+Inspired by the [minimal ROS2 examples](https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber), this tutorial takes you through several iterations of code with almost the same functionality.  A full working example is provided in each case with a detailed description of the code.  The section below shows the contents and learning obectives for each stage of the tutorial.  If you are really confident on ROS concepts and object-oriented programming in Python, go straight to the ROS timer tutorial.  Otherwise, you are advised to simply work through from start to finish _but_ you might find some stages easier than others, depending on your past experience.  
 
 Each tutorial stage comes with some exercises for you to add to the code yourself.  To do the exercises, first use `git checkout <branch>` to activate the relevant branch of the repository, then edit the appropriate files.  To test your solutions, the simulation is always started using `docker-compose up --build` and then stopped using `Ctrl+C`.  Use the terminal window output, foxglove studio, or the Docker Desktop (Windows and Mac only) to inspect the results.
 
 > Don't forget the `--build`.  Otherwise, your changes don't get built into the simulation, and you're just running the same code over and over.
 
-There are countless links and remarks in the tutorials.  These provide extra information, background and sources, but are not essential reading.  Follow them if you are interested, but do not feel compelled to digest each one.
+There are countless links in the tutorials.  These provide extra information, background and sources, but are not essential reading.  Follow them if you are interested, but do not feel compelled to digest each one.
 
 ## Contents
 
