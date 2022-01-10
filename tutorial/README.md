@@ -29,7 +29,7 @@ There are countless links and remarks in the tutorials.  These provide extra inf
 3. [A simple class](simple_class.md)
     - Learn how to use a Python class as a better drone controller
 
-4. [A better class](modular.md)
+4. [A better, more modular class](modular.md)
     - Learn how to use a more modular programming approach to improve your Python class
 
 5. [Finite state machine](finite_state.md)
