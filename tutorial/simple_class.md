@@ -216,6 +216,8 @@ The above is the same 'Python thing' as before, redirecting to the `main` functi
 
 ## Exercises
 
+All exercises work using the `simple_class` code so run `git checkout simple_class` first.
+
 1. Move the camera.  Publish a [message of type `std_msgs/Float32`](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html) to the `/vehicle_1/gimbal_tilt_cmd` topic to move the camera, with `0` in the `data` field being horizontal and `1.57` being straight downwards.
 
 [Back to tutorial contents](README.md#contents)
