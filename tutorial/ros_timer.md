@@ -69,7 +69,7 @@ The finite state machine and the state step counter are initialized.
         # create a ROS2 timer to run the control actions
         self.timer = self.create_timer(1.0, self.timer_callback)
 ```
-A separate `start` method creates the two topic subscriptions and the timer.  Callbacks will start running once this method is called.  I like to keep a separate `start` method in cases like this so you can build a controller object and poke at it before it actually does any ROS work.
+A separate `start` method creates the two topic subscriptions and the timer.  Callbacks will start running once this method is called.  I like to keep a separate `start` method in cases like this (instead of putting this in the `__init__` constructor function) so you can build a controller object and play with it before it actually does any ROS work.
 ```
     # on receiving status message, save it to global
     def state_callback(self,msg):
@@ -86,7 +86,7 @@ A separate `start` method creates the two topic subscriptions and the timer.  Ca
                                                                         msg.longitude,
                                                                         self.last_alt_rel))
 ```
-These are the two callback functions for the drone status and global position topics, respectively.  These will run in their own threads whenever messages are received.
+These are the two callback functions for the drone status and global position topics, respectively.  Once that `start` method has been called and the two subscriptions set up, these will run in their own threads whenever messages are received.
 ```
     def request_data_stream(self,msg_id,msg_interval):
         cmd_req = CommandLong.Request()
@@ -120,7 +120,9 @@ These are the two callback functions for the drone status and global position to
         self.last_target.pose.position.altitude = alt
         self.target_pub.publish(self.last_target)
         self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt)) 
-
+```
+These helper methods wrap up the ROS details for performing common drone actions: request data, change mode, arm, take-off and fly to a location. 
+```
     def state_transition(self):
         if self.control_state =='init':
             if self.last_status:
@@ -191,7 +193,11 @@ These are the two callback functions for the drone status and global position to
         elif self.control_state == 'exit':
             # nothing else to do
             return('exit')
+```
+The `state_transition` function is called once per control time step.  It carries out control tasks, depending on the current _state_ of the controller and the time spent in it so far, and then returns what the next controller state should be.  See the [finite state machine tutorial](finite_state.md) for a full discussion of the logic employed.
 
+_Note_: the `arming` state now sets the `last_alt_rel` property to zero when arming is successful.  We never did this before and got away with it.  With the ROS timer managing the update rate, it became possible for the next state transition to run before a new position message had been received, with the result that `last_alt_rel` was still at its initial `None` value, causing an error.  This just shows how timers and multi-threading require you to be careful about handling every case.
+```
     def timer_callback(self):
         new_state = self.state_transition()
         if new_state == self.control_state:
@@ -200,8 +206,11 @@ These are the two callback functions for the drone status and global position to
             self.state_timer = 0
         self.control_state = new_state
         self.get_logger().info('Controller state: {} for {} steps'.format(self.control_state, self.state_timer))
-                    
+```
+The `timer_callback` function will run automatically at the interval specified when the timer was set up in the `start` function.  It simply calls the `state_transition` method and then updates the finite state machine, both state and timer.  Common finite state stuff like this is therefore kept away from the scenario-specific control logic in `state_transition`.  The latter will evolve as you work on your solution, and it's important to avoid mistakes like forgetting to reset the timer.
 
+> Note there are no `spin` or `wait` calls anywhere in the code so far and the former `wait_for_new_status` method has gone.  The ROS timer now determines when to call te state transition update.  This makes the code simpler _but_ can introduce odd behaviour if things don't run in the order you expect, like the `last_altitude_rel` issue described above.
+```
 def main(args=None):
     
     rclpy.init(args=args)
@@ -209,24 +218,32 @@ def main(args=None):
     controller_node = FenswoodDroneController()
     controller_node.start()
     rclpy.spin(controller_node)
-
-
+```
+The `main` function is the ROS entry point for the controller (_i.e._ what ROS will run for us).  It just creates the controller, calls its `start` to set it running.  The `spin` call then turns execution over to the three threads created: the two callbacks and the timer, and there is nothing left to do in `main`.  The `spin` call will handle all the necessary timing and just keep the whole thing alive until it is killed by ROS (_e.g._ with a `Ctrl+C`).
+```
 if __name__ == '__main__':
     main()
 ```
-Main and the Python bit at the end remain unchanged.
-
+The Python bit on the end will redirect execution to the `main` function if the file is executed as a script.  (I'm not sure it's needed, given we point ROS to `main` in a different file.)
 
 ## Exercises
 
-All exercises work using the `finite_state` code so run `git checkout finite_state` first.
+All exercises work using the `ros_timer` code so run `git checkout ros_timer` first.
 
-1. Add a second target and fly to it only if you reach the first target within a limited time, or (b) if you fail to reach the first target in time.
+1. Create a method to move the camera.  It should publish a [message of type `std_msgs/Float32`](https://docs.ros.org/en/api/std_msgs/html/msg/Float32.html) to the `/vehicle_1/gimbal_tilt_cmd` topic to move the camera, with `0` in the `data` field being horizontal and `1.57` being straight downwards.  Move the camera on reaching the target location.
 
-2. Add an extra initial target, but make it very far away.  When you don't reach it in a sensible time, divert back to your original target.
+2. Add a method to measure distance (in some simple way) to the last target.  Use it to simplify the code in the `state_transition()` method.  Then add a stage to your code that flies to a second target after the first has been reached.
 
-3. Add a human 'approve' input.  When you get to altitude, ask the operator (in the log) if they are happy to proceed, and fly to the target only if they approve.  For input, you can define your own ROS topic and have them publish through Foxglove, or re-purpose the tele-op gamepad buttons to publish to a different topic, or just ask the operator to wiggle the camera.  Test all cases you can think of: operator says 'yes' when asked, operator says 'no' when asked, operator says nothing, operator has said 'yes' but before being asked, _etc._
+> None of the methods in the example so far returned a value!  If you include a `return x` statement in the method, you can use `x = self.my_method(stuff)` to access it.  Use `return a,b,c` and `a,b,c = self.my_method(stuff)` to return multiple values , if that's required.
 
-4. Add a human 'pause' input.  Define a button, topic or some other signal, and make the drone stop and hover if the operator requests it.  There are lots of ways of implementing this, including mode changes or extra control logic.  Don't forget you can connect QGroundControl to the simulation via localhost, TCP port 5761, if you want the operator to interact that way.
+3. Following on from above, change the togic so that you fly to the second target if you run out of time to reach the first.  Test by changing the timeout setting and/or moving the first target.  You should see your drone fly toward the first target but then divert.
+
+4. Add a request for [message 32, LOCAL_POSITION_NED](https://mavlink.io/en/messages/common.html#LOCAL_POSITION_NED).  Observe what happens on foxglove looking at topic `/vehicle_1/mavros/local_position/pose`.  In the code, add a subscriber to `/vehicle_1/mavros/local_position/pose` and try using this local altitude to track climb progress in `run()`.
+
+5. Add a human 'approve' input.  When you get to altitude, ask the operator (in the log) if they are happy to proceed, and fly to the target only if they approve.  For input, you can define your own ROS topic and have them publish through Foxglove, or re-purpose the tele-op gamepad buttons to publish to a different topic, or just ask the operator to wiggle the camera.  Test all cases you can think of: operator says 'yes' when asked, operator says 'no' when asked, operator says nothing, operator has said 'yes' but before being asked, _etc._
+
+6. Add a human 'pause' input.  Define a button, topic or some other signal, and make the drone stop and hover if the operator requests it.  There are lots of ways of implementing this, including mode changes or extra control logic.  Don't forget you can connect QGroundControl to the simulation via localhost, TCP port 5761, if you want the operator to interact that way.
+
+7. Add a method to send a velocity command by publishing a [geomerty_msgs/Twist message](http://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html) to the `/vehicle_1/mavros/setpoint_velocity/cmd_vel_unstamped` topic.  On reaching the target, use this to fly at a constant velocity for ten seconds.  The extend your logic so the operator can stop the drone earlier if they choose. 
 
 [Back to tutorial contents](README.md#contents)
