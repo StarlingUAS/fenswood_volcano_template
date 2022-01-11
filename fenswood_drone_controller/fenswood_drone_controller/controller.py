@@ -24,23 +24,23 @@ class FenswoodDroneController(Node):
         self.init_alt = None       # global for global altitude at start
         self.last_alt_rel = None   # global for last altitude relative to start
         # create service clients for long command (datastream requests)...
-        self.cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
+        self.cmd_cli = self.create_client(CommandLong, '/vehicle_1/mavros/cmd/command')
         while not self.cmd_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('command_int service not available, waiting again...')
         # ... for mode changes ...
-        self.mode_cli = self.create_client(SetMode, 'mavros/set_mode')
+        self.mode_cli = self.create_client(SetMode, '/vehicle_1/mavros/set_mode')
         while not self.mode_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('set_mode service not available, waiting again...')
         # ... for arming ...
-        self.arm_cli = self.create_client(CommandBool, 'mavros/cmd/arming')
+        self.arm_cli = self.create_client(CommandBool, '/vehicle_1/mavros/cmd/arming')
         while not self.arm_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('arming service not available, waiting again...')
         # ... and for takeoff
-        self.takeoff_cli = self.create_client(CommandTOL, 'mavros/cmd/takeoff')
+        self.takeoff_cli = self.create_client(CommandTOL, '/vehicle_1/mavros/cmd/takeoff')
         while not self.takeoff_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('takeoff service not available, waiting again...')
         # create publisher for setpoint
-        self.target_pub = self.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
+        self.target_pub = self.create_publisher(GeoPoseStamped, '/vehicle_1/mavros/setpoint_position/global', 10)
         # and make a placeholder for the last sent target
         self.last_target = GeoPoseStamped()
         # initial state for finite state machine
@@ -189,9 +189,9 @@ class FenswoodDroneController(Node):
 
     def run(self):
         # set up two subscribers, one for vehicle state...
-        state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
+        state_sub = self.create_subscription(State, '/vehicle_1/mavros/state', self.state_callback, 10)
         # ...and the other for global position
-        pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
+        pos_sub = self.create_subscription(NavSatFix, '/vehicle_1/mavros/global_position/global', self.position_callback, 10)
         for try_loop in range(600):
             if rclpy.ok():
                 self.wait_for_new_status()
