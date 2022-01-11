@@ -60,9 +60,9 @@ class FenswoodDroneController(Node):
 
     def run(self):
         # set up two subscribers, one for vehicle state...
-        state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
+        state_sub = self.create_subscription(State, '/vehicle_1/mavros/state', self.state_callback, 10)
         # ...and the other for global position
-        pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
+        pos_sub = self.create_subscription(NavSatFix, '/vehicle_1/mavros/global_position/global', self.position_callback, 10)
 
         # first wait for the system status to become 3 "standby"
         # see https://mavlink.io/en/messages/common.html#MAV_STATE
@@ -78,7 +78,7 @@ class FenswoodDroneController(Node):
         cmd_req.param1 = float(33)  # msg ID for position is 33 \
                                     # https://mavlink.io/en/messages/common.html#GLOBAL_POSITION_INT
         cmd_req.param2 = float(1000000)    # 1000000 micro-second interval : 1Hz rate
-        cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
+        cmd_cli = self.create_client(CommandLong, '/vehicle_1/mavros/cmd/command')
         while not cmd_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('command_int service not available, waiting again...')
         future = cmd_cli.call_async(cmd_req)
@@ -88,7 +88,7 @@ class FenswoodDroneController(Node):
         # now change mode to GUIDED
         mode_req = SetMode.Request()
         mode_req.custom_mode = "GUIDED"
-        mode_cli = self.create_client(SetMode, 'mavros/set_mode')
+        mode_cli = self.create_client(SetMode, '/vehicle_1/mavros/set_mode')
         while not mode_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('set_mode service not available, waiting again...')
         future = mode_cli.call_async(mode_req)
@@ -98,7 +98,7 @@ class FenswoodDroneController(Node):
         # next, try to arm the drone
         arm_req = CommandBool.Request()
         arm_req.value = True
-        arm_cli = self.create_client(CommandBool, 'mavros/cmd/arming')
+        arm_cli = self.create_client(CommandBool, '/vehicle_1/mavros/cmd/arming')
         while not arm_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('arming service not available, waiting again...')
         # keep trying until arming detected in state message, or 60 attempts
@@ -119,7 +119,7 @@ class FenswoodDroneController(Node):
         # take off and climb to 20.0m at current location
         takeoff_req = CommandTOL.Request()
         takeoff_req.altitude = 20.0
-        takeoff_cli = self.create_client(CommandTOL, 'mavros/cmd/takeoff')
+        takeoff_cli = self.create_client(CommandTOL, '/vehicle_1/mavros/cmd/takeoff')
         while not takeoff_cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('takeoff service not available, waiting again...')
         # only call once - seems to work OK
@@ -140,7 +140,7 @@ class FenswoodDroneController(Node):
         target_msg.pose.position.latitude = 51.423
         target_msg.pose.position.longitude = -2.671
         target_msg.pose.position.altitude = self.init_alt - 30.0 # unexplained correction factor
-        target_pub = self.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
+        target_pub = self.create_publisher(GeoPoseStamped, '/vehicle_1/mavros/setpoint_position/global', 10)
         self.wait_for_new_status() # short delay after creating publisher ensures message not lost
         target_pub.publish(target_msg)
         self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(target_msg.pose.position.latitude,
