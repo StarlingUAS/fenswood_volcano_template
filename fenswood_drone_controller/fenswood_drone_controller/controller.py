@@ -24,15 +24,15 @@ class FenswoodDroneController(Node):
         self.init_alt = None       # store for global altitude at start
         self.last_alt_rel = None   # store for last altitude relative to start
         # create service clients for long command (datastream requests)...
-        self.cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
+        self.cmd_cli = self.create_client(CommandLong, '/vehicle_1/mavros/cmd/command')
         # ... for mode changes ...
-        self.mode_cli = self.create_client(SetMode, 'mavros/set_mode')
+        self.mode_cli = self.create_client(SetMode, '/vehicle_1/mavros/set_mode')
         # ... for arming ...
-        self.arm_cli = self.create_client(CommandBool, 'mavros/cmd/arming')
+        self.arm_cli = self.create_client(CommandBool, '/vehicle_1/mavros/cmd/arming')
         # ... and for takeoff
-        self.takeoff_cli = self.create_client(CommandTOL, 'mavros/cmd/takeoff')
+        self.takeoff_cli = self.create_client(CommandTOL, '/vehicle_1/mavros/cmd/takeoff')
         # create publisher for setpoint
-        self.target_pub = self.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
+        self.target_pub = self.create_publisher(GeoPoseStamped, '/vehicle_1/mavros/setpoint_position/global', 10)
         # and make a placeholder for the last sent target
         self.last_target = GeoPoseStamped()
         # initial state for finite state machine
@@ -42,9 +42,9 @@ class FenswoodDroneController(Node):
 
     def start(self):
         # set up two subscribers, one for vehicle state...
-        state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
+        state_sub = self.create_subscription(State, '/vehicle_1/mavros/state', self.state_callback, 10)
         # ...and the other for global position
-        pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
+        pos_sub = self.create_subscription(NavSatFix, '/vehicle_1/mavros/global_position/global', self.position_callback, 10)
         # create a ROS2 timer to run the control actions
         self.timer = self.create_timer(1.0, self.timer_callback)
 
