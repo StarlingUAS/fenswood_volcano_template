@@ -1,4 +1,4 @@
-# Simple Class
+# Implementing the controller as a class
 
 [Back to tutorial contents](README.md#contents)
 
