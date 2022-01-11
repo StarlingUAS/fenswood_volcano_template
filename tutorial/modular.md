@@ -8,7 +8,7 @@ In the previous [simple class](simple_class.md) example, a controller class was 
 
 ## Example code
 
-This section explains the code in detail.  Only differences from the [first object-oriented solution](simple_class.md#example-code) are highlighted.
+To load this example, first run `git checkout modular`.  The key file is `controller.py` in the [fenswood_drone_controller/fenswood_drone_controller](../fenswood_drone_controller/fenswood_drone_controller) subdirectory.  Only differences from the [first object-oriented solution](simple_class.md#example-code) are highlighted.
 
 ```
 import rclpy

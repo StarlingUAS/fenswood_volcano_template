@@ -10,6 +10,8 @@ The controller is now implemented in its own class, a child of the ROS Node clas
 
 ## Example code
 
+To load this example, first run `git checkout ros_timer`.  The key file is `controller.py` in the [fenswood_drone_controller/fenswood_drone_controller](../fenswood_drone_controller/fenswood_drone_controller) subdirectory.  The remainder of this section describes how it works.
+
 ```
 import rclpy                                                    # type: ignore
 from rclpy.node import Node

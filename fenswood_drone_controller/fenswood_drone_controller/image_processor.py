@@ -16,9 +16,9 @@ class ImageProcessor(Node):
 
     def start(self):
         # set up subscriber for image
-        state_sub = self.create_subscription(Image, 'camera/image_raw', self.image_callback, 10)
+        state_sub = self.create_subscription(Image, '/vehicle_1/camera/image_raw', self.image_callback, 10)
 
-    # on receiving status message, save it to global
+    # on receiving image, convert and log information
     def image_callback(self,msg):
         img = self.br.imgmsg_to_cv2(msg)
         # can do OpenCV stuff on img now

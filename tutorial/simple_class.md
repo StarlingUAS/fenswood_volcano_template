@@ -10,7 +10,7 @@ We can improve on the ugliness of a monolithic script and global variables using
 
 ## Example code
 
-This section explains the code in detail.  Only differences from the [old school](old_school.md#example-code) are covered and details may refer back to explanations in that example.
+To load this example, first run `git checkout simple_class`.  The key file is `controller.py` in the [fenswood_drone_controller/fenswood_drone_controller](../fenswood_drone_controller/fenswood_drone_controller) subdirectory.  The remainder of this section describes how it works.  Only differences from the [old school](old_school.md#example-code) are covered and details may refer back to explanations in that example.
 
 ```
 import rclpy
