@@ -2,7 +2,9 @@
 
 ## Introduction
 
-You will learn how to write code in Python to interface with the (simulated) drone using ROS.  In particular, you will learn the newer ROS2 methods, which offer improved security and scalability.  On the way, you will learn the fundamentals of controlling a drone through a standard autopilot.
+This repository provides a template and tutorial to get you started writing code and running simulations for the Group Project in Aerial Robotics, based on the Fenswood Volcano scenario.
+
+In this tutorial, you will learn how to write code in Python to interface with the (simulated) drone using ROS.  In particular, you will learn the newer ROS2 methods, which offer improved security and scalability.  On the way, you will learn the fundamentals of controlling a drone through a standard autopilot.
 
 > You will also need to do little bits of Linux and Docker 'magic' to make the application work.  You are not expected to master these aspects: ask for help if they cause problems.  The primary learning objectives here are drone control, Python and ROS.  If you are interested in more details, see the [Starling overview](starling.md).
 
@@ -17,6 +19,9 @@ Each tutorial stage comes with some exercises for you to add to the code yoursel
 There are countless links in the tutorials.  These provide extra information, background and sources, but are not essential reading.  Follow them if you are interested, but do not feel compelled to digest each one.
 
 ## Contents
+
+1. [Getting started](getting_started.md)
+    - Learn how to install and run the simulation
 
 1. [Drone control](drone_control.md)
     - Learn the key steps in flying a drone using Ardupilot and ROS.

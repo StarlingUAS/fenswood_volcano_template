@@ -2,6 +2,7 @@
 import os
 
 file_list = ['README.md',
+             'getting_started.md',
              'drone_control.md',
              'old_school.md',
              'simple_class.md',
@@ -22,19 +23,6 @@ for file_name in file_list:
     tags[file_name] = lines[file_name][0]
     assert(tags[file_name].startswith('# '))
     tags[file_name] = tags[file_name][2:].rstrip().lower().replace(' ','-')
-
-file_name = 'getting_started.md'
-f = open('README.md', "r")
-lines[file_name] = f.readlines()
-#del lines[file_name][0:4] # wipe old heading and intro
-del lines[file_name][-3:] # wipe the end with link to folder
-tags[file_name] = lines[file_name][0]
-assert(tags[file_name].startswith('# '))
-tags[file_name] = tags[file_name][2:].rstrip().lower().replace(' ','-')
-
-lines[file_name].insert(1,'[TOC]\n')
-
-file_list.insert(0,'getting_started.md')
 
 #print(tags)
 
