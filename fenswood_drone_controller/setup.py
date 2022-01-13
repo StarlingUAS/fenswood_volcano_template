@@ -26,7 +26,6 @@ setup(
             "controller_simple_class = fenswood_drone_controller.controller_simple_class:main",
             "controller_modular = fenswood_drone_controller.controller_modular:main",
             "controller_finite_state = fenswood_drone_controller.controller_finite_state:main",
-            "controller_ros_timer = fenswood_drone_controller.controller_ros_timer:main",
             "image_processor = fenswood_drone_controller.image_processor:main"
         ]
     }
