@@ -10,7 +10,12 @@ We can improve on the ugliness of a monolithic script and global variables using
 
 ## Example code
 
-To load this example, first run `git checkout simple_class`.  The key file is `controller.py` in the [fenswood_drone_controller/fenswood_drone_controller](../fenswood_drone_controller/fenswood_drone_controller) subdirectory.  The remainder of this section describes how it works.  Only differences from the [old school](old_school.md#example-code) are covered and details may refer back to explanations in that example.
+To run this example:
+```
+docker-compose -f docker-compose-simple-class.yml up --build
+```
+
+The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py) subdirectory.  The remainder of this section describes how it works.  Only differences from the [old school](old_school.md#example-code) are covered and details may refer back to explanations in that example.
 
 ```
 import rclpy
@@ -216,7 +221,8 @@ The above is the same 'Python thing' as before, redirecting to the `main` functi
 
 ## Exercises
 
-All exercises work using the `simple_class` code so run `git checkout simple_class` first.
+
+All exercises involve editing the file [`fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py)
 
 1. Move the camera.  Publish a [message of type `std_msgs/Float32`](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html) to the `/vehicle_1/gimbal_tilt_cmd` topic to move the camera, with `0` in the `data` field being horizontal and `1.57` being straight downwards.
 

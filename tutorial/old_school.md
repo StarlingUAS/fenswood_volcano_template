@@ -23,7 +23,12 @@ Our programme will have three threads:
 
 ## Example code
 
-To load this example, first run `git checkout old_school`.  The key file is `controller.py` in the [fenswood_drone_controller/fenswood_drone_controller](../fenswood_drone_controller/fenswood_drone_controller) subdirectory.  The remainder of this section describes how it works.
+To run this example:
+```
+docker-compose -f docker-compose-old-school.yml up --build
+```
+
+The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_old_school.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_old_school.py) subdirectory.  The remainder of this section describes how it works.
 
 ```
 import rclpy

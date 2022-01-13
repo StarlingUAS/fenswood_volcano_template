@@ -57,9 +57,9 @@ These are the steps performed by the example code.  All versions use these same 
 
 ## Exercises
 
-All exercises work using the `old_school` code so run `git checkout old_school` first.
+All exercises work using the `old_school` code so run the simulation using `docker-compose -f docker-compose-old-school.yml up --build`.
 
-1. Run the simulation using `docker-compose up --build` and watch it progress using <a target="_blank" href="https://studio.foxglove.dev">https://studio.foxglove.dev</a>.  Use the teleoperation buttons (the little gamepad-like panels provided in the example layout, described in [Introspecting ROS](../README.md#introspecting-ros)) to interrupt the flight during climb or movement.  Play around with the teleoperation buttons to explore how they work, with careful attention to the relevant frame of reference.  Edit the panel settings and see what difference they make.
+1. Run the simulation and watch it progress using <a target="_blank" href="https://studio.foxglove.dev">https://studio.foxglove.dev</a>.  Use the teleoperation buttons (the little gamepad-like panels provided in the example layout, described in [Introspecting ROS](../README.md#introspecting-ros)) to interrupt the flight during climb or movement.  Play around with the teleoperation buttons to explore how they work, with careful attention to the relevant frame of reference.  Edit the panel settings and see what difference they make.
 
 2. Interrupt a simulation again and add a `Publisher` panel in Foxglove.  Publish messages to the `/vehicle_1/mavros/setpoint_velocity/cmd_vel_unstamped` topic and see how the drone responds.
 

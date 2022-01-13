@@ -8,7 +8,12 @@ In the previous [simple class](simple_class.md) example, a controller class was 
 
 ## Example code
 
-To load this example, first run `git checkout modular`.  The key file is `controller.py` in the [fenswood_drone_controller/fenswood_drone_controller](../fenswood_drone_controller/fenswood_drone_controller) subdirectory.  Only differences from the [first object-oriented solution](simple_class.md#example-code) are highlighted.
+To run this example:
+```
+docker-compose -f docker-compose-modular.yml up --build
+```
+
+The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_modular.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_modular.py).  Only differences from the [first object-oriented solution](simple_class.md#example-code) are highlighted.
 
 ```
 import rclpy
@@ -254,7 +259,7 @@ The remainder is unchanged.
 
 ## Exercises
 
-All exercises work using the `modular` code so run `git checkout modular` first.
+All exercises involve editing the file [`fenswood_drone_controller/fenswood_drone_controller/controller_modular.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_modular.py)
 
 1. Create a method to move the camera.  It should publish a [message of type `std_msgs/Float32`](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html) to the `/vehicle_1/gimbal_tilt_cmd` topic to move the camera, with `0` in the `data` field being horizontal and `1.57` being straight downwards.
 

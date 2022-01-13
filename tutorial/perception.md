@@ -28,13 +28,11 @@ The steps to get perception working are:
 
 ## Example code
 
-To load this example, first run `git checkout perception`.  Then to run it, use `docker-compose up --build` as before.  _It might take a little time due to dependency installs._  The remainder of this section works through each of the steps identified above, corresponding to a particular file.
-
-There is no separate branch for this perception tutorial as it is the final stage.  If you have been working on other stages, run `git checkout main` to find all the perception code. 
+To run this example, use `docker-compose up --build` as before.  The remainder of this section works through each of the steps identified above, corresponding to a particular file. 
 
 ### Writing the image processing code
 
-A new file `image_processor.py` is added to the [fenswood_drone_controller/fenswood_drone_controller](../fenswood_drone_controller/fenswood_drone_controller) directory.
+A separate file [`fenswood_drone_controller/fenswood_drone_controller/image_processor.py`](../fenswood_drone_controller/fenswood_drone_controller/image_processor.py) contained the Python code for doing the image processing, such as it is.
 
 > Why the repeated name?  It happens a lot in Python.  The outer directory is the ROS package and the inner one is the Python package.  You do need both.
 
@@ -113,6 +111,10 @@ setup(
     entry_points={
         "console_scripts": [
             "controller = fenswood_drone_controller.controller:main",
+            "controller_old_school = fenswood_drone_controller.controller_old_school:main",
+            "controller_simple_class = fenswood_drone_controller.controller_simple_class:main",
+            "controller_modular = fenswood_drone_controller.controller_modular:main",
+            "controller_finite_state = fenswood_drone_controller.controller_finite_state:main",
             "image_processor = fenswood_drone_controller.image_processor:main"
         ]
     }
@@ -170,12 +172,10 @@ The final line is the command to run when the container is launched, which is to
 
 ## Exercises
 
-Run `git checkout main` first.
-
 1. Add a ROS timer to the image processor node and use it to log the latest received image every half second, rather than every image received.
 
 2. Send a basic message, maybe just a [string](https://docs.ros.org/en/api/std_msgs/html/msg/String.html) with some image information, from the image processor to the controller.  Log the message on both sides so you can be sure it got through.
 
-2. Do some basic image processing on the received image and _re-publish it_ to a new ROS topic.  [This tutorial](https://docs.opencv.org/4.x/d3/df2/tutorial_py_basic_ops.html) gives some basics like changing a few pixels around or drawing abox round a region.  [This tutorial](https://automaticaddison.com/getting-started-with-opencv-in-ros-2-foxy-fitzroy-python/#Create_the_Image_Publisher_Node_Python) shows the syntax for converting an image back from OpenCV to ROS and publishing it.
+3. Do some basic image processing on the received image and _re-publish it_ to a new ROS topic.  [This tutorial](https://docs.opencv.org/4.x/d3/df2/tutorial_py_basic_ops.html) gives some basics like changing a few pixels around or drawing abox round a region.  [This tutorial](https://automaticaddison.com/getting-started-with-opencv-in-ros-2-foxy-fitzroy-python/#Create_the_Image_Publisher_Node_Python) shows the syntax for converting an image back from OpenCV to ROS and publishing it.
 
 [Back to tutorial contents](README.md#contents)

@@ -16,7 +16,11 @@ The system will always start in the `init` state, moving to `arming` if the repo
 
 ## Example code
 
-To load this example, first run `git checkout finite_state`.  The key file is `controller.py` in the [fenswood_drone_controller/fenswood_drone_controller](../fenswood_drone_controller/fenswood_drone_controller) subdirectory.  The remainder of this section describes how it works.  As ever, only the changes from the previous [modular version](modular.md#example-code) are highlighted.
+To run this example, use the command:
+```
+docker-compose -f docker-compose-finite-state.yml up --build
+```
+The key file is [fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py](../fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py).  The remainder of this section describes how it works.  As ever, only the changes from the previous [modular version](modular.md#example-code) are highlighted.
 
 ```
 import rclpy                                                    # type: ignore

@@ -10,20 +10,24 @@ The controller is now implemented in its own class, a child of the ROS Node clas
 
 ## Example code
 
-To load this example, first run `git checkout ros_timer`.  The key file is `controller.py` in the [fenswood_drone_controller/fenswood_drone_controller](../fenswood_drone_controller/fenswood_drone_controller) subdirectory.  The remainder of this section describes how it works.
+Run the eample using
+```
+docker-compose -f docker-compose-ros-timer.yml up --build
+```
+The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller.py`](../fenswood_drone_controller/fenswood_drone_controller/controller.py).  The remainder of this section describes how it works.
 
 ```
-import rclpy                                                    # type: ignore
+import rclpy
 from rclpy.node import Node
 
 # import message definitions for receiving status and position
-from mavros_msgs.msg import State                               # type: ignore
-from sensor_msgs.msg import NavSatFix                           # type: ignore
+from mavros_msgs.msg import State                          
+from sensor_msgs.msg import NavSatFix                     
 # import message definition for sending setpoint
-from geographic_msgs.msg import GeoPoseStamped                  # type: ignore
+from geographic_msgs.msg import GeoPoseStamped         
 
 # import service definitions for changing mode, arming, take-off and generic command
-from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong    # type: ignore
+from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong  
 ```
 Imports include `rclpy` for ROS functions, especially the `Node` class to be the parent for our controller class.  The more specific imports represent the message type for every ROS topic and service that the controller will use.
 ```
@@ -230,7 +234,7 @@ The Python bit on the end will redirect execution to the `main` function if the 
 
 ## Exercises
 
-All exercises work using the `ros_timer` code so run `git checkout ros_timer` first.
+All exercises involve editing the file [`fenswood_drone_controller/fenswood_drone_controller/controller.py`](../fenswood_drone_controller/fenswood_drone_controller/controller.py).  
 
 1. Create a method to move the camera.  It should publish a [message of type `std_msgs/Float32`](https://docs.ros.org/en/api/std_msgs/html/msg/Float32.html) to the `/vehicle_1/gimbal_tilt_cmd` topic to move the camera, with `0` in the `data` field being horizontal and `1.57` being straight downwards.  Move the camera on reaching the target location.
 
