@@ -24,6 +24,7 @@ setup(
             "controller = fenswood_drone_controller.controller:main",
             "controller_old_school = fenswood_drone_controller.controller_old_school:main",
             "controller_simple_class = fenswood_drone_controller.controller_simple_class:main",
+            "controller_modular = fenswood_drone_controller.controller_modular:main",
             "image_processor = fenswood_drone_controller.image_processor:main"
         ]
     }
