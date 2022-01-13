@@ -1,18 +1,14 @@
-"""
-Very simple script-based sequencer using the old school examples
-from https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber
-"""
-import rclpy                                                    # type: ignore
+import rclpy
 from rclpy.node import Node
 
 # import message definitions for receiving status and position
-from mavros_msgs.msg import State                               # type: ignore
-from sensor_msgs.msg import NavSatFix                           # type: ignore
+from mavros_msgs.msg import State
+from sensor_msgs.msg import NavSatFix
 # import message definition for sending setpoint
-from geographic_msgs.msg import GeoPoseStamped                  # type: ignore
+from geographic_msgs.msg import GeoPoseStamped
 
 # import service definitions for changing mode, arming, take-off and generic command
-from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong    # type: ignore
+from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong
 
 
 class FenswoodDroneController(Node):
