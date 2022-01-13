@@ -63,7 +63,7 @@ def main(args=None):
     
     rclpy.init(args=args)
 
-    g_node = rclpy.create_node('example_controller')
+    g_node = rclpy.create_node('old_school_controller')
 
     # set up two subscribers, one for vehicle state...
     state_sub = g_node.create_subscription(State, '/vehicle_1/mavros/state', state_callback, 10)

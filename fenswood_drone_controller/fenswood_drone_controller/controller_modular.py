@@ -18,7 +18,7 @@ from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong    # t
 class FenswoodDroneController(Node):
 
     def __init__(self):
-        super().__init__('example_controller')
+        super().__init__('modular_controller')
         self.last_state = None     # global for last received status message
         self.last_pos = None       # global for last received position message
         self.init_alt = None       # global for global altitude at start
