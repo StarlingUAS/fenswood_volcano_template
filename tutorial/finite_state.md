@@ -253,7 +253,7 @@ Main and the Python bit at the end remain unchanged.
 
 ## Exercises
 
-All exercises work using the `finite_state` code so run `git checkout finite_state` first.
+All exercises work involve editing the file `controller_finite_state.py`.
 
 1. Add a second target and fly to it only if you reach the first target within a limited time, or (b) if you fail to reach the first target in time.
 
