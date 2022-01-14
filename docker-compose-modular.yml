@@ -7,7 +7,7 @@ services:
     command: ros2 launch fenswood_drone_controller controller_modular.launch.xml
 
   simhost:
-    image: arthurrichards77/starling_simhost_fenswood:v1.1
+    image: uobflightlabstarling/starling-sim-iris-ap-fenswood:latest
     environment:
       - AP_SITL_HOST=sitl
     ports:

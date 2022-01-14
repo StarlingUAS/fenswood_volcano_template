@@ -6,7 +6,7 @@ services:
     build: ./fenswood_drone_controller
       
   simhost:
-    image: arthurrichards77/starling_simhost_fenswood:v1.1
+    image: uobflightlabstarling/starling-sim-iris-ap-fenswood:latest
     environment:
       - AP_SITL_HOST=sitl
     ports:
