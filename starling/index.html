@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../img/favicon.ico" rel="shortcut icon"/>
+<title>Starling - Fenswood Scenario</title>
+<link href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" rel="stylesheet">
+<link href="../css/theme.css" rel="stylesheet"/>
+<link href="../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+    // Current page data
+    var mkdocs_page_name = "Starling";
+    var mkdocs_page_input_path = "starling.md";
+    var mkdocs_page_url = null;
+  </script>
+<script defer="" src="../js/jquery-2.1.1.min.js"></script>
+<script defer="" src="../js/modernizr-2.8.3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</link></head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href=".."> Fenswood Scenario</a>
+<div role="search">
+<form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="main navigation" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../drone_control/">Controlling a Drone using Mavlink Over ROS</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../old_school/">An Old-School Example</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../simple_class/">Implementing the contorller as a class</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modular/">A More Modular Controller</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../finite_state/">Adding A Finite State Machine</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ros_timer/">Using A Ros Timer</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../perception/">Adding Perception</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">Starling</a>
+<ul class="current">
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="top navigation" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="..">Fenswood Scenario</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a href="..">Docs</a> »</li>
+<li>Tutorials »</li>
+<li>Starling</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/StarlingUAS/fenswood_volcano_template/edit/master/docs/starling.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div role="main">
+<div class="section">
+<h1 id="brief-outline-of-the-starling-framework"><span class="enumerate-headings-plugin enumerate-heading-plugin">9.</span> Brief outline of the Starling framework<a class="headerlink" href="#brief-outline-of-the-starling-framework" title="Permanent link">¶</a></h1>
+<p>The template is built on the <a href="https://github.com/StarlingUAS">Starling</a> framework which combines open-source components to provide a realistic, cross-platform simulation for drone flight:
+ - <a href="http://gazebosim.org/">Gazebo</a>, a physical and visual simulation package
+ - <a href="https://ardupilot.org/">Ardupilot</a>, a free autopilot software with <a href="https://mavlink.io/en/">MAVLINK</a> interfacing and <a href="https://ardupilot.org/copter/docs/common-simulation.html">simulation</a> capability
+ - <a href="https://www.ros.org/">ROS</a>, a popular software framework for robot interfacing, plus the <a href="http://wiki.ros.org/mavros">MAVROS</a> package for connecting MAVLINK drones to ROS. 
+ - <a href="https://opencv.org/">OpenCV</a>, an image processing library with Python support
+ - <a href="https://www.docker.com/">Docker</a>, a system for packaging and deploying </p>
+<blockquote>
+<p>Surely there's a simpler way?  Almost certainly, but you wouldn't learn so much.  These are the standard tools of the robotics trade, and while it'll take you a while to learn them, the skills you get will go far beyond this project.  This way also means we can do more with Starling, like migrate controllers from simulation to actual flight.</p>
+</blockquote>
+<p><img alt="Application framework" src="../app.png"/></p>
+<p>Starling uses <a href="https://www.docker.com/">Docker</a> to package up the simulation framework for use on different computers.  I found the <a href="https://docs.duckietown.org/DT19/software_devel/out/docker_intro.html">Duckietown introduction</a> really good for getting a feel for Docker.  The <code>docker-compose up --build</code> command that starts the simulation actually launches a set of <em>containers</em> on your computer, a bit like a set of virtual computers all networked together.  The file <code>docker-compose.yml</code> (which you will not need to edit) provides the 'recipe' for what containers to run.  In our case there are five, illustrated in the figure above.</p>
+<ul>
+<li><a href="http://gazebosim.org/">Gazebo</a>, the physics simulator.  Given commands from the autopilot, it simulates how the drone moves.  Gazebo also provides graphics, simulating the drone cemra feed and sending it to ROS, and providing a representation of the world for us to spy on via the browser interface on <code>localhost:8080</code>.</li>
+</ul>
+<p><em>Work in progress</em></p>
+</div>
+</div>
+<footer>
+<div aria-label="footer navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral" href="../perception/" title="Adding Perception"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>Copyright © 2021 University of Bristol Flight Laboratory</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/StarlingUAS/fenswood_volcano_template/" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../perception/" style="color: #fcfcfc">« Previous</a></span>
+</span>
+</div>
+<script>var base_url = '..';</script>
+<script defer="" src="../js/theme_extra.js"></script>
+<script defer="" src="../js/theme.js"></script>
+<script defer="" src="../search/main.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>
