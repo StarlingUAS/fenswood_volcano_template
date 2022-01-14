@@ -28,7 +28,7 @@ To run this example:
 docker-compose -f docker-compose-old-school.yml up --build
 ```
 
-The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_old_school.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_old_school.py) subdirectory.  The remainder of this section describes how it works.
+The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_old_school.py`](https://github.com/StarlingUAS/fenswood_volcano_template/blob/main/fenswood_drone_controller/fenswood_drone_controller/controller_old_school.py) subdirectory.  The remainder of this section describes how it works.
 
 ```
 import rclpy
