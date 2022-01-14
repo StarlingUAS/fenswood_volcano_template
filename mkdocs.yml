@@ -25,5 +25,5 @@ nav:
     - "Adding A Finite State Machine": 'finite_state.md'
     - "Using A Ros Timer": 'ros_timer.md'
     - "Adding Perception": 'perception.md'
-    - "More on Starling": 'starling.md'
+    - "Starling": 'starling.md'
   
