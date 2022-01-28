@@ -4,7 +4,9 @@ This repository provides a template and tutorial to get you started writing code
 
 ## Tutorials
 
-See [tutorial folder](tutorial) for detailed instructions and code walkthroughs.
+The tutorial is hosted here: https://starlinguas.github.io/fenswood_volcano_template/
+
+But also, see [tutorial folder](tutorial) for detailed instructions and code walkthroughs. 
 
 ## Quick Start
 
