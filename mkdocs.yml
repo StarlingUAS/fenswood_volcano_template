@@ -17,13 +17,14 @@ plugins:
 
 nav:
   - "Tutorials":
-    - "Getting Started": 'getting_started.md'
-    - "Controlling a Drone using Mavlink Over ROS": 'drone_control.md'
-    - "An Old-School Example": 'old_school.md'
-    - "Implementing the contorller as a class" : 'simple_class.md'
-    - "A More Modular Controller": 'modular.md'
-    - "Adding A Finite State Machine": 'finite_state.md'
-    - "Using A Ros Timer": 'ros_timer.md'
-    - "Adding Perception": 'perception.md'
-    - "Starling": 'starling.md'
-  
+    - "1. Getting Started": 'tutorial/getting_started.md'
+    - "2. Controlling a Drone using Mavlink Over ROS": 'tutorial/drone_control.md'
+    - "3. An Old-School Example": 'tutorial/old_school.md'
+    - "4. Implementing the contorller as a class" : 'tutorial/simple_class.md'
+    - "5. A More Modular Controller": 'tutorial/modular.md'
+    - "6. Adding A Finite State Machine": 'tutorial/finite_state.md'
+    - "7. Using A Ros Timer": 'tutorial/ros_timer.md'
+    - "8. Adding Perception": 'tutorial/perception.md'
+    - "9. Conclusion and Next Steps": 'tutorial/conclusion.md'
+  - "Advanced Tutorials":
+    - "1. Starling and Containers": 'advanced/starling.md'
