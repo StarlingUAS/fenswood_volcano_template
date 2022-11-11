@@ -6,9 +6,11 @@ This repository provides a template and tutorial to get you started writing code
 
 In this tutorial, you will learn how to write code in Python to interface with the (simulated) drone using ROS.  In particular, you will learn the newer ROS2 methods, which offer improved security and scalability.  On the way, you will learn the fundamentals of controlling a drone through a standard autopilot.
 
-> You will also need to do little bits of Linux and Docker 'magic' to make the application work.  You are not expected to master these aspects: ask for help if they cause problems.  The primary learning objectives here are drone control, Python and ROS.  If you are interested in more details, see the [Starling overview](starling.md).
-
+> You will also need to do little bits of Linux and Docker 'magic' to make the application work.  You are not expected to master these aspects: ask for help if they cause problems.  The primary learning objectives here are drone control, Python and ROS.
+>
 In the examples, a drone takes off, moves to a target location, and then flies home.  In the later `perception` example, some very basic information is gathered from its camera image.  Together, these examples give you all the building blocks you will need to carry out the project.
+
+Once you are more confident with writing writing code in Python and controlling your drone in ROS, the advanced tutorial will then slowly start peeling back the layers of the Linux and Docker 'magic' which you have been using. **You are not expected to master these aspects**. These advanced topics will give you a greater understanding of the underlying system if you wish to achieve more complex behaviours.
 
 ## How to use this tutorial
 
@@ -24,30 +26,28 @@ There are countless links in the tutorials.  These provide extra information, ba
 
 1. [Getting started](tutorial/getting_started.md)
     - Learn how to install and run the simulation
-
-1. [Drone control](tutorial/drone_control.md)
+2. [Drone control](tutorial/drone_control.md)
     - Learn the key steps in flying a drone using Ardupilot and ROS.
-
-2. [Old school](tutorial/old_school.md)
+3. [Old school](tutorial/old_school.md)
     - Learn how to control the drone using ROS from Python
-
-3. [A simple class](tutorial/simple_class.md)
+4. [A simple class](tutorial/simple_class.md)
     - Learn how to use a Python class as a better drone controller
-
-4. [A better, more modular class](tutorial/modular.md)
+5. [A better, more modular class](tutorial/modular.md)
     - Learn how to use a more modular programming approach to improve your Python class
-
-5. [Finite state machine](tutorial/finite_state.md)
+6. [Finite state machine](tutorial/finite_state.md)
     - Learn how to use a finite state machine as your decision-making engine
-
-6. [ROS timer](tutorial/ros_timer.md)
+7. [ROS timer](tutorial/ros_timer.md)
     - Learn how to use ROS2 built-in timer to manage the finite state machine execution
-
-7. [Perception](tutorial/perception.md)
+8. [Perception](tutorial/perception.md)
     - Learn how to add a second process or 'node' to the ROS application (ROS)
     - Learn how to install a third-party library in the Volcano application (Docker)
     - Learn how to access the camera image ready for vision processing (OpenCV)
 
 ### Advanced Tutorial
 
-*Work In Progress*
+1. [Starling](advanced/starling.md)
+   - Get an overview of the Starling drone application testing system.
+2. [Containerising your controller](advanced/containers.md)
+   - Learn what a container is, why we use them and how to run your application as a container.
+
+*Work in Progress*

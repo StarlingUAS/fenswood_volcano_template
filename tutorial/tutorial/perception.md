@@ -1,6 +1,6 @@
 # Adding perception
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Introduction
 
@@ -14,7 +14,7 @@ Other tutorials have emphasized the importance of modularity and the same applie
 
 ## Software deployment
 
-The tutorial so far has deliberately hidden a lot of the [Starling](https://github.com/StarlingUAS) framework around the controller.  You have seen and worked on just the one file `controller.py` and we have provided some 'magic' that runs that script _and_ a simulator, hooked up together, when you type in that `docker-compose...` command.  Since all we have been changing is the one file, none of the rest of the framework has changed, and that `--build` bit on the end of the `docker-compose...` command has made sure to pick up the edited file each time.  So far so good, but now we are extending the framework, it is time to look further into the 'magic'.  It is covered in depth in the [Starling overview](starling.md) but briefly, we will deploy the application shown below:
+The tutorial so far has deliberately hidden a lot of the [Starling](https://github.com/StarlingUAS) framework around the controller.  You have seen and worked on just the one file `controller.py` and we have provided some 'magic' that runs that script _and_ a simulator, hooked up together, when you type in that `docker-compose...` command.  Since all we have been changing is the one file, none of the rest of the framework has changed, and that `--build` bit on the end of the `docker-compose...` command has made sure to pick up the edited file each time.  So far so good, but now we are extending the framework, it is time to look further into the 'magic'.  It is covered in depth in the [Starling overview chapter of the advanced tutorial](../advanced/starling.md) but briefly, we will deploy the application shown below:
 
 ![Application framework](app.png)
 
@@ -24,15 +24,15 @@ The steps to get perception working are:
 - extend the launch file so the image processor is started along with the controller
 - make sure the Docker container for the controller has the necessary dependencies installed
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Example code
 
-To run this example, use `docker-compose up --build` as before.  The remainder of this section works through each of the steps identified above, corresponding to a particular file. 
+To run this example, use `docker-compose up --build` as before.  The remainder of this section works through each of the steps identified above, corresponding to a particular file.
 
 ### Writing the image processing code
 
-A separate file [`fenswood_drone_controller/fenswood_drone_controller/image_processor.py`](../fenswood_drone_controller/fenswood_drone_controller/image_processor.py) contained the Python code for doing the image processing, such as it is.
+A separate file [`fenswood_drone_controller/fenswood_drone_controller/image_processor.py`](https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/image_processor.py) contained the Python code for doing the image processing, such as it is.
 
 > Why the repeated name?  It happens a lot in Python.  The outer directory is the ROS package and the inner one is the Python package.  You do need both.
 
@@ -71,7 +71,7 @@ _Note:_ it's usually a bad idea to do lots of work in callbacks, especially on s
 The image callback method does very little for now, but enough to see if everything is working.  The `CvBridge` created in `__init__` is used to convert the image message to an OpenCV image object.  All I do is extract its size using the `shape` property and log it.
 ```
 def main(args=None):
-    
+
     rclpy.init(args=args)
 
     image_node = ImageProcessor()
@@ -122,7 +122,7 @@ setup(
 ```
 There, that bit right at the end: added to the `console_scripts` list entry in the `entry_points` dictionary, the item `"image_processor = fenswood_drone_controller.image_processor:main"` tells ROS that you run an `image_processor` node by calling the `main` function in the `image_processor` module of the `fenswood_drone_controller` package.
 
-> Please don't ask the general principles behind this - unless you want to get _really_ into Python and ROS packaging, just follow the pattern. 
+> Please don't ask the general principles behind this - unless you want to get _really_ into Python and ROS packaging, just follow the pattern.
 
 ### Telling ROS to run it
 
@@ -150,7 +150,7 @@ RUN apt update
 RUN apt-get install -y ros-foxy-vision-opencv python3-pip
 RUN pip3 install opencv-python
 ```
-These are the new lines, and they're just like the commands you would type into your Linux computer if you wanted to do this locally.  First update the software list, then install the `vision_opencv` package for ROS2 version `foxy`.  Also, since te OpenCV Python libraries are installed using `pip`, we need to install `python3-pip` as well.  Finally, `pip3` is used to install the `opencv-python` package that lets us import `cv2`. 
+These are the new lines, and they're just like the commands you would type into your Linux computer if you wanted to do this locally.  First update the software list, then install the `vision_opencv` package for ROS2 version `foxy`.  Also, since te OpenCV Python libraries are installed using `pip`, we need to install `python3-pip` as well.  Finally, `pip3` is used to install the `opencv-python` package that lets us import `cv2`.
 
 This is not the ['proper' way](https://docs.ros.org/en/foxy/Tutorials/Writing-A-Simple-Py-Publisher-And-Subscriber.html#build-and-run) to install dependencies for a ROS package.  You're supposed to define the right dependencies in one of the package files and then use the `rosdep` tool to install them all.  That would play poorly with our Docker approach though, as every change to the code would trigger a re-install and it would all get rather slow.  Instead, I've taken the pain of finding the dependencies manually, with a little trial and error, so I can do it just once on first building.  This gets into the dark arts of managing a Linux system, which is beyond the scope for learning here.  *If you want to use some extra software for the project, please just ask staff for help.*
 
@@ -168,7 +168,7 @@ CMD [ "ros2", "launch", "fenswood_drone_controller", "controller.launch.xml" ]
 ```
 The final line is the command to run when the container is launched, which is to use ROS to run the launch file discussed above, _i.e._ to run our two nodes.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Exercises
 
@@ -178,4 +178,4 @@ The final line is the command to run when the container is launched, which is to
 
 3. Do some basic image processing on the received image and _re-publish it_ to a new ROS topic.  [This tutorial](https://docs.opencv.org/4.x/d3/df2/tutorial_py_basic_ops.html) gives some basics like changing a few pixels around or drawing abox round a region.  [This tutorial](https://automaticaddison.com/getting-started-with-opencv-in-ros-2-foxy-fitzroy-python/#Create_the_Image_Publisher_Node_Python) shows the syntax for converting an image back from OpenCV to ROS and publishing it.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)

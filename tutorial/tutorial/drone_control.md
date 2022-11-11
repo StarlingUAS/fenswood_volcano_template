@@ -1,19 +1,19 @@
 # Controlling an Ardupilot drone using MAVLINK over ROS
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Introduction
 
-The application includes a representation of the [Ardupilot copter](https://ardupilot.org/copter/docs/introduction.html) autopilot, a free open-source product in common use in aerial robotics both commercially and in research.  Instead of running on a physical autopilot like the [Pixhawk](https://pixhawk.org/), the application uses its [simulation capability](https://ardupilot.org/copter/docs/common-simulation.html) to run it on your computer.  Hence you must learn the 'fly the autopilot'.  
+The application includes a representation of the [Ardupilot copter](https://ardupilot.org/copter/docs/introduction.html) autopilot, a free open-source product in common use in aerial robotics both commercially and in research.  Instead of running on a physical autopilot like the [Pixhawk](https://pixhawk.org/), the application uses its [simulation capability](https://ardupilot.org/copter/docs/common-simulation.html) to run it on your computer.  Hence you must learn the 'fly the autopilot'.
 
 > While the standard interface for the drone is [MAVLINK](https://mavlink.io/en/), you will interact using ROS, with the conversion handled by the [MAVROS package](http://wiki.ros.org/mavros).
 
 ## Example steps
 
-These are the steps performed by the example code.  All versions use these same steps.  To follow along, I recommend running the `old_school` version using 
+These are the steps performed by the example code.  All versions use these same steps.  To follow along, I recommend running the `old_school` version using
 ```
 docker-compose -f docker-compose-old-school.yml up --build
-``` 
+```
 and then using <a target="_blank" href="https://studio.foxglove.dev">foxglove</a> (see [Introspecting ROS](../README.md#introspecting-ros)).  You should see reports on the ROS logs about progress through the steps.
 
  1. Wait for the autopilot to initialize, indicated by a `system_status` value of 3, [`MAV_STATE_STANDBY`](https://mavlink.io/en/messages/common.html#MAV_STATE_STANDBY), on the [`/vehicle_1/mavros/state`](http://wiki.ros.org/mavros#mavros.2FPlugins.sys_status) ROS topic.
@@ -27,11 +27,11 @@ and then using <a target="_blank" href="https://studio.foxglove.dev">foxglove</a
     - `Loiter` drone uses GPS to hold position, with movements commanded by pilot using joysticks
     - `Land` drone lands at current location
     - `RTL` drone goes back to home position and lands
-    - `Auto` drone follows a set of uploaded mission commands 
+    - `Auto` drone follows a set of uploaded mission commands
 
     > Although you can change mode using software, try not to do it too often.  One of the safety procedures is for the pilot to take control by changing to `Stabilise` or `Loiter` mode, and that becomes harder if your software keeps trying to change back.
 
-  4. [Arm the drone](https://ardupilot.org/copter/docs/arming_the_motors.html).  This stage starts the motors spinning, hence you only want to do it right before take-off.  It can be done by software or by the pilot using joysticks.  Arming involves certain checks of things like GPS stability and position estimation, which sometimes take about a minute to settle after powering up.  Hence you can expect to need a few goes before the drone successfuly arms.  
+  4. [Arm the drone](https://ardupilot.org/copter/docs/arming_the_motors.html).  This stage starts the motors spinning, hence you only want to do it right before take-off.  It can be done by software or by the pilot using joysticks.  Arming involves certain checks of things like GPS stability and position estimation, which sometimes take about a minute to settle after powering up.  Hence you can expect to need a few goes before the drone successfuly arms.
 
     > Think about safety when deciding how to arm.  You must not start the motors spinning unless you're sure there is no-one working on the drone, _e.g._ completing the battery fitting.  In the simulated examples, the software does it as soon as the drone is ready.  In practice, you might want pilot confirmation, or just leave it to the pilot themselves.
 
@@ -55,13 +55,13 @@ and then using <a target="_blank" href="https://studio.foxglove.dev">foxglove</a
 
   9. Send the drone back to land at its take-off location, by changing to `RTL` mode.
 
-    > The example just stops after sending the `RTL` mode command.  
+    > The example just stops after sending the `RTL` mode command.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Exercises
 
-All exercises work using the `old_school` code so run the simulation using `docker-compose -f docker-compose-old-school.yml up --build`.
+All exercises work using the `old_school` code so run the simulation using `docker-compose -f 1_old_school/docker-compose-old-school.yml up --build`.
 
 1. Run the simulation and watch it progress using <a target="_blank" href="https://studio.foxglove.dev">https://studio.foxglove.dev</a>.  Use the teleoperation buttons (the little gamepad-like panels provided in the example layout, described in [Introspecting ROS](../README.md#introspecting-ros)) to interrupt the flight during climb or movement.  Play around with the teleoperation buttons to explore how they work, with careful attention to the relevant frame of reference.  Edit the panel settings and see what difference they make.
 
@@ -69,9 +69,8 @@ All exercises work using the `old_school` code so run the simulation using `dock
 
 3. Interrupt a simulation and use a `Publisher` panel to send messages to the `/vehicle_1/mavros/setpoint_position/global` topic.  Try sending different latitude and longitude locations from the project briefing document.
 
-    > *Note* due to a bug somewhere, you'll need to delete the `seq` line in the publisher panel to get this to work.  
+    > *Note* due to a bug somewhere, you'll need to delete the `seq` line in the publisher panel to get this to work.
 
 4. Interrupt a simulation and use a combination of the gamepad and the setpoint publisher to land the drone at or near the target.  Use the `/vehicle_1/gimbal_tilt_cmd` publisher to move the camera, with `0` being horizontal and `1.57` being straight downwards.
 
-[Back to tutorial contents](README.md#contents)
-
+[Back to tutorial contents](../README.md#contents)

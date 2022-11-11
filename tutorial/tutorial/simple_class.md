@@ -1,12 +1,12 @@
 # Implementing the controller as a class
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Introduction
 
-We can improve on the ugliness of a monolithic script and global variables using Object-Oriented Programming (OOP).  A full introduction to OOP is beyond the scope of this tutorial, so it is expected that you are familiar with the fundamentals: classes, objects, methods, properties, methods and inheritance.  By making our controller an _object_, it is able to share data between its different _methods_ (in the callbacks and the main thread) without using ugly global variables.  Furthermore, we can make our controller a child of the ROS `Node` class which tidies up a lot of ROS interaction, inspired by the [minimal ROS examples](https://github.com/ros2/examples/blob/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber/subscriber_member_function.py). 
+We can improve on the ugliness of a monolithic script and global variables using Object-Oriented Programming (OOP).  A full introduction to OOP is beyond the scope of this tutorial, so it is expected that you are familiar with the fundamentals: classes, objects, methods, properties, methods and inheritance.  By making our controller an _object_, it is able to share data between its different _methods_ (in the callbacks and the main thread) without using ugly global variables.  Furthermore, we can make our controller a child of the ROS `Node` class which tidies up a lot of ROS interaction, inspired by the [minimal ROS examples](https://github.com/ros2/examples/blob/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber/subscriber_member_function.py).
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Example code
 
@@ -15,7 +15,7 @@ To run this example:
 docker-compose -f docker-compose-simple-class.yml up --build
 ```
 
-The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py) subdirectory.  The remainder of this section describes how it works.  Only differences from the [old school](old_school.md#example-code) are covered and details may refer back to explanations in that example.
+The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py`](https://github.com/StarlingUAS/fenswood_volcano_template/blob/main/fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py) subdirectory.  The remainder of this section describes how it works.  Only differences from the [old school](old_school.md#example-code) are covered and details may refer back to explanations in that example.
 
 ```
 import rclpy
@@ -101,7 +101,7 @@ Because our class is a child of the `Node` class, methods of that parent class c
             self.wait_for_new_status()
             if self.last_state.system_status==3:
                 self.get_logger().info('Drone ready for flight')
-                break 
+                break
 
         # send command to request regular position updates
         cmd_req = CommandLong.Request()
@@ -125,7 +125,7 @@ Because our class is a child of the `Node` class, methods of that parent class c
         future = mode_cli.call_async(mode_req)
         rclpy.spin_until_future_complete(self, future)    # wait for response
         self.get_logger().info('Request sent for GUIDED mode.')
-        
+
         # next, try to arm the drone
         arm_req = CommandBool.Request()
         arm_req.value = True
@@ -176,7 +176,7 @@ Because our class is a child of the `Node` class, methods of that parent class c
         target_pub.publish(target_msg)
         self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(target_msg.pose.position.latitude,
                                                                             target_msg.pose.position.longitude,
-                                                                            target_msg.pose.position.altitude)) 
+                                                                            target_msg.pose.position.altitude))
 
         # wait for drone to reach desired position, or timeout after 60 attempts
         for try_arrive in range(60):
@@ -194,7 +194,7 @@ Because our class is a child of the `Node` class, methods of that parent class c
         future = mode_cli.call_async(mode_req)
         rclpy.spin_until_future_complete(self, future)    # wait for response
         self.get_logger().info('Request sent for RTL mode.')
-        
+
         # now just serve out the time until process killed
         while rclpy.ok():
             rclpy.spin_once(self)
@@ -204,7 +204,7 @@ The rest of this method is almost identical to the [old school example](old_scho
 
 ```
 def main(args=None):
-    
+
     rclpy.init(args=args)
 
     controller_node = FenswoodDroneController()
@@ -222,8 +222,8 @@ The above is the same 'Python thing' as before, redirecting to the `main` functi
 ## Exercises
 
 
-All exercises involve editing the file [`fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py)
+All exercises involve editing the file [`fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py`](https://github.com/StarlingUAS/fenswood_volcano_template/blob/main/fenswood_drone_controller/fenswood_drone_controller/controller_simple_class.py)
 
 1. Move the camera.  Publish a [message of type `std_msgs/Float32`](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html) to the `/vehicle_1/gimbal_tilt_cmd` topic to move the camera, with `0` in the `data` field being horizontal and `1.57` being straight downwards.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)

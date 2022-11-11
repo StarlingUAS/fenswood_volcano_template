@@ -1,4 +1,4 @@
-site_name: Fenswood Scenario
+site_name: Fenswood Volcano Tutorial
 theme: readthedocs
 repo_url: https://github.com/StarlingUAS/fenswood_volcano_template
 site_description: 'Fenswood Volcano Template Project'
@@ -27,4 +27,5 @@ nav:
     - "8. Adding Perception": 'tutorial/perception.md'
     - "9. Conclusion and Next Steps": 'tutorial/conclusion.md'
   - "Advanced Tutorials":
-    - "1. Starling and Containers": 'advanced/starling.md'
+    - "1. Brief Starling Introduction": 'advanced/starling.md'
+    - "2. Packaging your controller into a container  ": 'advanced/containers.md'

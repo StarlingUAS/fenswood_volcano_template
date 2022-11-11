@@ -1,6 +1,6 @@
 # Finite state machine
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Introduction
 
@@ -12,7 +12,7 @@ The figure above shows an implementation of our control flow as a finite state m
 
 The system will always start in the `init` state, moving to `arming` if the reported status reaches 'standby' (value 3) and remaining in `init` otherwise.  In `arming`, arm commands will regularly be sent.  If the drone takes too long to respond, the system will move to `exit` state (now handling the timeout cases properly), or if it does successfuly arm, it will move to `climbing` (issuing the take-off command on the transition), or stay in `arming` otherwise.  From `climbing` it will send the target command and move to `on_way` on reaching altitude, move to `landing` if too much time elapses, or remain `climbing` otherwise.  From the `on_way` state, either timing out or reaching the target will trigger a move to `landing`.  The `landing` state does nothing more than issue an "RTL" command and then immediately move state to `exit`, from where there is no further change as the only transition out is to stay in `exit`.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Example code
 
@@ -20,7 +20,7 @@ To run this example, use the command:
 ```
 docker-compose -f docker-compose-finite-state.yml up --build
 ```
-The key file is [fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py](../fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py).  The remainder of this section describes how it works.  As ever, only the changes from the previous [modular version](modular.md#example-code) are highlighted.
+The key file is [fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py](https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py).  The remainder of this section describes how it works.  As ever, only the changes from the previous [modular version](modular.md#example-code) are highlighted.
 
 ```
 import rclpy                                                    # type: ignore
@@ -69,7 +69,7 @@ class FenswoodDroneController(Node):
         # timer for time spent in each state
         self.state_timer = 0
 ```
-The last two statements are new to the `__init__` controller constructor.  `self.control_state` will record the current state of the system and, as described in the logic above, will be `init` to begin.  the `state_timer` will hold the time spent in each state, facilitating the timeout transitions (see later). 
+The last two statements are new to the `__init__` controller constructor.  `self.control_state` will record the current state of the system and, as described in the logic above, will be `init` to begin.  the `state_timer` will hold the time spent in each state, facilitating the timeout transitions (see later).
 ```
     # on receiving status message, save it to global
     def state_callback(self,msg):
@@ -99,7 +99,7 @@ The last two statements are new to the `__init__` controller constructor.  `self
                 if self.last_status.header.stamp.sec > last_stamp:
                     break
         else:
-            # if never had a message, just wait for first one          
+            # if never had a message, just wait for first one
             for try_wait in range(60):
                 if self.last_status:
                     break
@@ -136,11 +136,11 @@ The last two statements are new to the `__init__` controller constructor.  `self
         self.last_target.pose.position.longitude = lon
         self.last_target.pose.position.altitude = alt
         self.target_pub.publish(self.last_target)
-        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt)) 
+        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt))
 ```
 The above utilities are unchanged - they will be called by different logic, but their operation remains the same.
 
-> A _really_ good style would probably package these up in a separate file as a module, as they are quite distinct and self-contained. 
+> A _really_ good style would probably package these up in a separate file as a module, as they are quite distinct and self-contained.
 ```
     def state_transition(self):
         if self.control_state =='init':
@@ -203,7 +203,7 @@ The above utilities are unchanged - they will be called by different logic, but 
             else:
                 self.get_logger().info('Target error {},{}'.format(d_lat,d_lon))
                 return('on_way')
-            
+
         elif self.control_state == 'landing':
             # return home and land
             self.change_mode("RTL")
@@ -238,7 +238,7 @@ With each iteration of this code, the `run()` method does less and less.  With t
 ```
 
 def main(args=None):
-    
+
     rclpy.init(args=args)
 
     controller_node = FenswoodDroneController()
@@ -263,4 +263,4 @@ All exercises work involve editing the file `controller_finite_state.py`.
 
 4. Add a human 'pause' input.  Define a button, topic or some other signal, and make the drone stop and hover if the operator requests it.  There are lots of ways of implementing this, including mode changes or extra control logic.  Don't forget you can connect QGroundControl to the simulation via localhost, TCP port 5761, if you want the operator to interact that way.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)

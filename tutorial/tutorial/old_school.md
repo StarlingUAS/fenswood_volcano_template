@@ -1,6 +1,6 @@
 # Old-School Example
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Introduction
 
@@ -99,7 +99,7 @@ def wait_for_new_status():
             if g_last_state.header.stamp.sec > last_stamp:
                 break
     else:
-        # if never had a message, just wait for first one          
+        # if never had a message, just wait for first one
         for try_wait in range(60):
             if g_last_state:
                 break
@@ -117,12 +117,12 @@ In testing, the state messages come in at 1Hz, so this function waits for about 
 def main(args=None):
     global g_node, g_init_alt
 ```
-The `main` function will carry the main thread of our program, including all the decision-making in this example.  The `global` line means we will be writing to a couple of variables, as discussed already.  
+The `main` function will carry the main thread of our program, including all the decision-making in this example.  The `global` line means we will be writing to a couple of variables, as discussed already.
 ```
     rclpy.init(args=args)
     g_node = rclpy.create_node('example_controller')
 ```
-The above are two bits of ROS 'magic'.  Every process that talks over ROS is called a 'node' and has to register itself with the rest of the ROS environment and give itself a name.  You will see this name turn up in the logs on Foxglove to identify which message comes from which node.  
+The above are two bits of ROS 'magic'.  Every process that talks over ROS is called a 'node' and has to register itself with the rest of the ROS environment and give itself a name.  You will see this name turn up in the logs on Foxglove to identify which message comes from which node.
 ```
     state_sub = g_node.create_subscription(State, '/vehicle_1/mavros/state', state_callback, 10)
     pos_sub = g_node.create_subscription(NavSatFix, '/vehicle_1/mavros/global_position/global', position_callback, 10)
@@ -139,7 +139,7 @@ Now the script just works through the [steps described in the Drone control tuto
         wait_for_new_status()
         if g_last_state.system_status==3:
             g_node.get_logger().info('Drone ready for flight')
-            break 
+            break
 ```
 First, above, we wait up to a minute (assuming `wait_for_new_status` takes one second) to reach the 'standby' status (3).
 
@@ -167,7 +167,7 @@ In our case, we learn [from the documentation](http://wiki.ros.org/mavros#mavros
 
 As services have the risk of delaying or even deadlocking your code, ROS gives some rather complicated mechanisms for calling them.  The `call_async()` command starts (yet) another thread to wait for the response, and all I do is use `spin_until_future_complete()` to just wait for the response and then log that it finished.  The response data would be in the `future` object after the `spin` is done.  Lazily, I just ignore it, assume it worked, and move on.
 
-> Generally, I am not a fan of ROS services.  ROS2 has had to make them [rather complicated](https://docs.ros.org/en/foxy/How-To-Guides/Sync-Vs-Async.html) to overcome the problems of deadlocks, when nodes end up waiting for each other to respond to services.  I can see the advantage of having explicit responses to some messages, but the associated complexity is a pain.  The old [Parrot ARDrone ROS drivers](http://wiki.ros.org/ardrone_autonomy) managed to do absolutely everything with just a few topics and no services.  Meanwhile, the newer [ROS actions](https://docs.ros.org/en/foxy/Tutorials/Understanding-ROS2-Actions.html) provide a much better interface for call-and-response behaviour.  Lots of really useful tools like [py_trees_ros](https://github.com/splintered-reality/py_trees_ros) support topics and actions but not services.  Still, we are lucky that others have produced MAVROS for us, so it's worth a little pain to accommodate their choices.  
+> Generally, I am not a fan of ROS services.  ROS2 has had to make them [rather complicated](https://docs.ros.org/en/foxy/How-To-Guides/Sync-Vs-Async.html) to overcome the problems of deadlocks, when nodes end up waiting for each other to respond to services.  I can see the advantage of having explicit responses to some messages, but the associated complexity is a pain.  The old [Parrot ARDrone ROS drivers](http://wiki.ros.org/ardrone_autonomy) managed to do absolutely everything with just a few topics and no services.  Meanwhile, the newer [ROS actions](https://docs.ros.org/en/foxy/Tutorials/Understanding-ROS2-Actions.html) provide a much better interface for call-and-response behaviour.  Lots of really useful tools like [py_trees_ros](https://github.com/splintered-reality/py_trees_ros) support topics and actions but not services.  Still, we are lucky that others have produced MAVROS for us, so it's worth a little pain to accommodate their choices.
 
 ```
     mode_req = SetMode.Request()
@@ -179,8 +179,8 @@ As services have the risk of delaying or even deadlocking your code, ROS gives s
     rclpy.spin_until_future_complete(g_node, future)    # wait for response
     g_node.get_logger().info('Request sent for GUIDED mode.')
 ```
-Changing mode requires another service call.  Hopefully the pattern is emerging: build a service request `mode_req`, then a client `mode_cli`, wait for the service, call it, `spin_until_future_complete` to wait for completion, and then move on.  None of the service calls in this tutorial ever check the response.  If necessary, I you could verify the mode change by looking at the state message. 
-```    
+Changing mode requires another service call.  Hopefully the pattern is emerging: build a service request `mode_req`, then a client `mode_cli`, wait for the service, call it, `spin_until_future_complete` to wait for completion, and then move on.  None of the service calls in this tutorial ever check the response.  If necessary, I you could verify the mode change by looking at the state message.
+```
     arm_req = CommandBool.Request()
     arm_req.value = True
     arm_cli = g_node.create_client(CommandBool, '/vehicle_1/mavros/cmd/arming')
@@ -239,7 +239,7 @@ Time to get the drone moving.  Start by composing a `GeoPoseStamped()` message w
     target_pub.publish(target_msg)
     g_node.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(target_msg.pose.position.latitude,
                                                                            target_msg.pose.position.longitude,
-                                                                           target_msg.pose.position.altitude)) 
+                                                                           target_msg.pose.position.altitude))
 ```
 And publishing is as simple as this - create a publisher object and then call its `publish` method to send the message.  *Note* the `wait_for_new_status()` call between creating the publisher and using it - I've found that using publishers seem to take a little time to get ready, and if you try and publish straight after creating, the message often vanishes.
 ```

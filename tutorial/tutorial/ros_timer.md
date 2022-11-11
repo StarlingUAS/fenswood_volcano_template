@@ -1,12 +1,12 @@
 # Using a ROS timer
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Introduction
 
 The controller is now implemented in its own class, a child of the ROS Node class so it's easy to access ROS functionality.  Basic drone interactions like mode changes and movement commands are implemented as methods containing the necessary ROS functions.  Callback functions record incoming data to properties for other methods to access.  A [finite state machine](finite_state.md#introduction) manages the decision-making.  In this final enhancement, a ROS timer is used to update the finite state machine, making our node in line with established ROS2 best practice.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Example code
 
@@ -14,20 +14,20 @@ Run the eample using
 ```
 docker-compose -f docker-compose-ros-timer.yml up --build
 ```
-The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller.py`](../fenswood_drone_controller/fenswood_drone_controller/controller.py).  The remainder of this section describes how it works.
+The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller.py`](https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller.py).  The remainder of this section describes how it works.
 
 ```
 import rclpy
 from rclpy.node import Node
 
 # import message definitions for receiving status and position
-from mavros_msgs.msg import State                          
-from sensor_msgs.msg import NavSatFix                     
+from mavros_msgs.msg import State
+from sensor_msgs.msg import NavSatFix
 # import message definition for sending setpoint
-from geographic_msgs.msg import GeoPoseStamped         
+from geographic_msgs.msg import GeoPoseStamped
 
 # import service definitions for changing mode, arming, take-off and generic command
-from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong  
+from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong
 ```
 Imports include `rclpy` for ROS functions, especially the `Node` class to be the parent for our controller class.  The more specific imports represent the message type for every ROS topic and service that the controller will use.
 ```
@@ -43,7 +43,7 @@ class FenswoodDroneController(Node):
         # and make a placeholder for the last sent target
         self.last_target = GeoPoseStamped()
 ```
-The contructor `__init__` calls the parent constructor to initialize the ROS connections.  Properties for shared information are created and (mostly) initialized to `None` for easy detection of missing data.  
+The contructor `__init__` calls the parent constructor to initialize the ROS connections.  Properties for shared information are created and (mostly) initialized to `None` for easy detection of missing data.
 ```
         # create service clients for long command (datastream requests)...
         self.cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
@@ -125,9 +125,9 @@ These are the two callback functions for the drone status and global position to
         self.last_target.pose.position.longitude = lon
         self.last_target.pose.position.altitude = alt
         self.target_pub.publish(self.last_target)
-        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt)) 
+        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt))
 ```
-These helper methods wrap up the ROS details for performing common drone actions: request data, change mode, arm, take-off and fly to a location. 
+These helper methods wrap up the ROS details for performing common drone actions: request data, change mode, arm, take-off and fly to a location.
 ```
     def state_transition(self):
         if self.control_state =='init':
@@ -190,7 +190,7 @@ These helper methods wrap up the ROS details for performing common drone actions
             else:
                 self.get_logger().info('Target error {},{}'.format(d_lat,d_lon))
                 return('on_way')
-            
+
         elif self.control_state == 'landing':
             # return home and land
             self.change_mode("RTL")
@@ -218,7 +218,7 @@ The `timer_callback` function will run automatically at the interval specified w
 > Note there are no `spin` or `wait` calls anywhere in the code so far and the former `wait_for_new_status` method has gone.  The ROS timer now determines when to call te state transition update.  This makes the code simpler _but_ can introduce odd behaviour if things don't run in the order you expect, like the `last_altitude_rel` issue described above.
 ```
 def main(args=None):
-    
+
     rclpy.init(args=args)
 
     controller_node = FenswoodDroneController()
@@ -234,7 +234,7 @@ The Python bit on the end will redirect execution to the `main` function if the 
 
 ## Exercises
 
-All exercises involve editing the file [`fenswood_drone_controller/fenswood_drone_controller/controller.py`](../fenswood_drone_controller/fenswood_drone_controller/controller.py).  
+All exercises involve editing the file [`fenswood_drone_controller/fenswood_drone_controller/controller.py`](https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller.py).
 
 1. Create a method to move the camera.  It should publish a [message of type `std_msgs/Float32`](https://docs.ros.org/en/api/std_msgs/html/msg/Float32.html) to the `/vehicle_1/gimbal_tilt_cmd` topic to move the camera, with `0` in the `data` field being horizontal and `1.57` being straight downwards.  Move the camera on reaching the target location.
 
@@ -250,6 +250,6 @@ All exercises involve editing the file [`fenswood_drone_controller/fenswood_dron
 
 6. Add a human 'pause' input.  Define a button, topic or some other signal, and make the drone stop and hover if the operator requests it.  There are lots of ways of implementing this, including mode changes or extra control logic.  Don't forget you can connect QGroundControl to the simulation via localhost, TCP port 5761, if you want the operator to interact that way.
 
-7. Add a method to send a velocity command by publishing a [geomerty_msgs/Twist message](http://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html) to the `/vehicle_1/mavros/setpoint_velocity/cmd_vel_unstamped` topic.  On reaching the target, use this to fly at a constant velocity for ten seconds.  The extend your logic so the operator can stop the drone earlier if they choose. 
+7. Add a method to send a velocity command by publishing a [geomerty_msgs/Twist message](http://docs.ros.org/en/api/geometry_msgs/html/msg/Twist.html) to the `/vehicle_1/mavros/setpoint_velocity/cmd_vel_unstamped` topic.  On reaching the target, use this to fly at a constant velocity for ten seconds.  The extend your logic so the operator can stop the drone earlier if they choose.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)

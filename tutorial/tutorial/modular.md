@@ -1,6 +1,6 @@
 # A more modular controller
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Introduction
 
@@ -13,7 +13,7 @@ To run this example:
 docker-compose -f docker-compose-modular.yml up --build
 ```
 
-The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_modular.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_modular.py).  Only differences from the [first object-oriented solution](simple_class.md#example-code) are highlighted.
+The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_modular.py`](https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller_modular.py).  Only differences from the [first object-oriented solution](simple_class.md#example-code) are highlighted.
 
 ```
 import rclpy
@@ -38,7 +38,7 @@ class FenswoodDroneController(Node):
         self.init_alt = None       # global for global altitude at start
         self.last_alt_rel = None   # global for last altitude relative to start
 ```
-The code starts off with the same imports and initialization as the [simple class implementation](simple_class.md#example-code). 
+The code starts off with the same imports and initialization as the [simple class implementation](simple_class.md#example-code).
 ```
         # create service clients for long command (datastream requests)...
         self.cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
@@ -70,7 +70,7 @@ You _could_ have kept these activities in other methods, creating new clients ea
 > Arguably, I should have put the `wait_for_service` calls in `run()` as well, so an object could be constructed in isolation from ROS if I wanted to.
 
 ```
-        
+
     # on receiving status message, save it to global
     def state_callback(self,msg):
         self.last_state = msg
@@ -99,7 +99,7 @@ You _could_ have kept these activities in other methods, creating new clients ea
                 if self.last_state.header.stamp.sec > last_stamp:
                     break
         else:
-            # if never had a message, just wait for first one          
+            # if never had a message, just wait for first one
             for try_wait in range(60):
                 if self.last_state:
                     break
@@ -116,7 +116,7 @@ Callbacks and the `wait_for_status()` utility method are unchanged: these are al
         future = self.cmd_cli.call_async(cmd_req)
         rclpy.spin_until_future_complete(self, future)    # wait for response
 ```
-Above is the first of the new methods to take on a specific task: in the case, requesting a data stream.  "Make sure every module hides something" is [another good guideline](https://www.parkerklein.com/notes/the-elements-of-programming-style).  Here, we hide from later software that requesting data involves all this complicated stuff about long commands and service calls.  The function takes the desired message `msg_id` and the message interval `msg_interval` as arguments so future calls can request different messages and rates.  With the relevant service client already set up in the `__init__` constructor, we can go straight ahead and call `self.cmd_cli.call_async()` without the set-up and waiting. 
+Above is the first of the new methods to take on a specific task: in the case, requesting a data stream.  "Make sure every module hides something" is [another good guideline](https://www.parkerklein.com/notes/the-elements-of-programming-style).  Here, we hide from later software that requesting data involves all this complicated stuff about long commands and service calls.  The function takes the desired message `msg_id` and the message interval `msg_interval` as arguments so future calls can request different messages and rates.  With the relevant service client already set up in the `__init__` constructor, we can go straight ahead and call `self.cmd_cli.call_async()` without the set-up and waiting.
 ```
     def change_mode(self,new_mode):
         mode_req = SetMode.Request()
@@ -145,7 +145,7 @@ Hopefully the pattern is emerging: each of the steps of our control flow are now
         self.last_target.pose.position.longitude = lon
         self.last_target.pose.position.altitude = alt
         self.target_pub.publish(self.last_target)
-        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt)) 
+        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt))
 
 ```
 Methods for `take_off` and `flyto` are hopefully self-explanatory, and show how Python code can just about comment itself if you choose the names clearly.  Note that `flyto()` saves the commanded target to a property `last_target` for later use.
@@ -165,7 +165,7 @@ Methods for `take_off` and `flyto` are hopefully self-explanatory, and show how 
             self.wait_for_new_status()
             if self.last_state.system_status==3:
                 self.get_logger().info('Drone ready for flight')
-                break 
+                break
 ```
 The `run()` method starts off just as always, launching the subscriptions and waiting for the right status.
 ```
@@ -181,7 +181,7 @@ Now the next two steps, asking for the position data and changing to GUIDED, are
 
 > Why did I not put the `get_logger().info()` calls in the methods too?  Don't know really - I did for `flyto` but not for the other methods.  That inconsistency irks me now, but it made sense at the time.
 
-```        
+```
         # next, try to arm the drone
         # keep trying until arming detected in state message, or 60 attempts
         for try_arm in range(60):
@@ -203,7 +203,7 @@ The arming step is slightly simpler with just the `arm_request` call doing the w
         self.takeoff(20.0)
         self.get_logger().info('Takeoff request sent.')
 ```
-Take off is now just one line calling the earlier method, plus a log record. 
+Take off is now just one line calling the earlier method, plus a log record.
 ```
         # wait for drone to reach desired altitude, or 60 attempts
         for try_alt in range(60):
@@ -236,14 +236,14 @@ Monitoring progress is largely unchanged, apart from using the stored `last_targ
         self.get_logger().info('Request sent for RTL mode.')
 ```
 The `change_mode` method is used again to head home using RTL.
-```     
+```
         # now just serve out the time until process killed
         while rclpy.ok():
             rclpy.spin_once(self)
 
 
 def main(args=None):
-    
+
     rclpy.init(args=args)
 
     controller_node = FenswoodDroneController()
@@ -255,11 +255,11 @@ if __name__ == '__main__':
 ```
 The remainder is unchanged.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
 
 ## Exercises
 
-All exercises involve editing the file [`fenswood_drone_controller/fenswood_drone_controller/controller_modular.py`](../fenswood_drone_controller/fenswood_drone_controller/controller_modular.py)
+All exercises involve editing the file [`fenswood_drone_controller/fenswood_drone_controller/controller_modular.py`](https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller_modular.py)
 
 1. Create a method to move the camera.  It should publish a [message of type `std_msgs/Float32`](http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html) to the `/vehicle_1/gimbal_tilt_cmd` topic to move the camera, with `0` in the `data` field being horizontal and `1.57` being straight downwards.
 
@@ -269,4 +269,4 @@ All exercises involve editing the file [`fenswood_drone_controller/fenswood_dron
 
 3. Add a request for [message 32, LOCAL_POSITION_NED](https://mavlink.io/en/messages/common.html#LOCAL_POSITION_NED).  Observe what happens on foxglove looking at topic `/vehicle_1/mavros/local_position/pose`.  In the code, add a subscriber to `/vehicle_1/mavros/local_position/pose` and try using this local altitude to track climb progress in `run()`.
 
-[Back to tutorial contents](README.md#contents)
+[Back to tutorial contents](../README.md#contents)
