@@ -10,7 +10,7 @@ In the previous [simple class](simple_class.md) example, a controller class was 
 
 To run this example:
 ```
-docker-compose -f docker-compose-modular.yml up --build
+docker-compose -f 3_modular/docker-compose-modular.yml up --build
 ```
 
 The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller_modular.py`](https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller_modular.py).  Only differences from the [first object-oriented solution](simple_class.md#example-code) are highlighted.

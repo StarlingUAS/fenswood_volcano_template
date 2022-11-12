@@ -18,7 +18,7 @@ The system will always start in the `init` state, moving to `arming` if the repo
 
 To run this example, use the command:
 ```
-docker-compose -f docker-compose-finite-state.yml up --build
+docker-compose -f 4_finite_state/docker-compose-finite-state.yml up --build
 ```
 The key file is [fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py](https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py).  The remainder of this section describes how it works.  As ever, only the changes from the previous [modular version](modular.md#example-code) are highlighted.
 

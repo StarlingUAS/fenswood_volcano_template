@@ -12,7 +12,7 @@ The controller is now implemented in its own class, a child of the ROS Node clas
 
 Run the eample using
 ```
-docker-compose -f docker-compose-ros-timer.yml up --build
+docker-compose -f 5_ros_timer/docker-compose-ros-timer.yml up --build
 ```
 The key file is [`fenswood_drone_controller/fenswood_drone_controller/controller.py`](https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller.py).  The remainder of this section describes how it works.
 

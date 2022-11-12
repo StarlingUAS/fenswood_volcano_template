@@ -19,16 +19,19 @@ The tutorial so far has deliberately hidden a lot of the [Starling](https://gith
 ![Application framework](app.png)
 
 The steps to get perception working are:
+
 - write the Python code for the image processing
 - tell our `fenswood_drone_controller` ROS package where to find it
 - extend the launch file so the image processor is started along with the controller
 - make sure the Docker container for the controller has the necessary dependencies installed
 
+> If you do the advanced tutorial, you will learn a bit more about how all of this works together and how you might be able to do some more complex things!
+
 [Back to tutorial contents](../README.md#contents)
 
 ## Example code
 
-To run this example, use `docker-compose up --build` as before.  The remainder of this section works through each of the steps identified above, corresponding to a particular file.
+To run this example, use `docker-compose up --build` as before or run the one in the `6_perception` directory.  The remainder of this section works through each of the steps identified above, corresponding to a particular file.
 
 ### Writing the image processing code
 
