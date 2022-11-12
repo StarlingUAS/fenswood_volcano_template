@@ -16,7 +16,7 @@ plugins:
       toc_depth: 3
 
 nav:
-  - "Tutorials":
+  - "Core Tutorial":
     - "1. Getting Started": 'tutorial/getting_started.md'
     - "2. Controlling a Drone using Mavlink Over ROS": 'tutorial/drone_control.md'
     - "3. An Old-School Example": 'tutorial/old_school.md'
@@ -26,6 +26,6 @@ nav:
     - "7. Using A Ros Timer": 'tutorial/ros_timer.md'
     - "8. Adding Perception": 'tutorial/perception.md'
     - "9. Conclusion and Next Steps": 'tutorial/conclusion.md'
-  - "Advanced Tutorials":
+  - "Advanced Tutorial":
     - "1. Brief Starling Introduction": 'advanced/starling.md'
     - "2. Packaging your controller into a container  ": 'advanced/containers.md'
