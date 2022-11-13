@@ -37,7 +37,7 @@ class FenswoodDroneController(Node):
 
     def state_transition(self):
         if self.control_state =='init':
-            if self.drone.initialised():
+            if self.drone.initialise():
                     # move on to arming
                     return('arming')
             else:

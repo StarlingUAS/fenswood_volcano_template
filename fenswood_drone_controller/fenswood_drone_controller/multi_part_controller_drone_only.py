@@ -41,7 +41,7 @@ class DroneController():
     # on receiving status message, save it to global
     def state_callback(self,msg):
         self.last_status = msg
-        self.get_logger().debug('Mode: {}.  Armed: {}.  System status: {}'.format(msg.mode,msg.armed,msg.system_status))
+        self.node.get_logger().debug('Mode: {}.  Armed: {}.  System status: {}'.format(msg.mode,msg.armed,msg.system_status))
 
     # on receiving positon message, save it to global
     def position_callback(self,msg):
@@ -49,7 +49,7 @@ class DroneController():
         if self.init_alt:
             self.last_alt_rel = msg.altitude - self.init_alt
         self.last_pos = msg
-        self.get_logger().debug('Drone at {}N,{}E altitude {}m'.format(msg.latitude,
+        self.node.get_logger().debug('Drone at {}N,{}E altitude {}m'.format(msg.latitude,
                                                                         msg.longitude,
                                                                         self.last_alt_rel))
 
@@ -59,40 +59,40 @@ class DroneController():
         cmd_req.param1 = float(msg_id)
         cmd_req.param2 = float(msg_interval)
         future = self.cmd_cli.call_async(cmd_req)
-        self.get_logger().info('Requested msg {} every {} us'.format(msg_id,msg_interval))
+        self.node.get_logger().info('Requested msg {} every {} us'.format(msg_id,msg_interval))
 
     def change_mode(self,new_mode):
         mode_req = SetMode.Request()
         mode_req.custom_mode = new_mode
         future = self.mode_cli.call_async(mode_req)
-        self.get_logger().info('Request sent for {} mode.'.format(new_mode))
+        self.node.get_logger().info('Request sent for {} mode.'.format(new_mode))
 
     def arm_request(self):
         arm_req = CommandBool.Request()
         arm_req.value = True
         future = self.arm_cli.call_async(arm_req)
-        self.get_logger().info('Arm request sent')
+        self.node.get_logger().info('Arm request sent')
 
     def takeoff(self,target_alt):
         takeoff_req = CommandTOL.Request()
         takeoff_req.altitude = target_alt
         future = self.takeoff_cli.call_async(takeoff_req)
-        self.get_logger().info('Requested takeoff to {}m'.format(target_alt))
+        self.node.get_logger().info('Requested takeoff to {}m'.format(target_alt))
 
     def flyto(self,lat,lon,alt):
         self.last_target.pose.position.latitude = lat
         self.last_target.pose.position.longitude = lon
         self.last_target.pose.position.altitude = alt
         self.target_pub.publish(self.last_target)
-        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt))
+        self.node.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt))
 
     def initialise(self):
-        if self.drone.last_status and self.drone.last_status.system_status == 3:
-            self.get_logger().info('Drone initialized')
+        if self.last_status and self.last_status.system_status == 3:
+            self.node.get_logger().info('Drone initialized')
             # send command to request regular position updates
             self.request_data_stream(33, 1000000)
             # change mode to GUIDED
-            self.drone.change_mode("GUIDED")
+            self.change_mode("GUIDED")
             # Drone initialised and attempting to change mode
             return True
         # Drone not yet initialised
