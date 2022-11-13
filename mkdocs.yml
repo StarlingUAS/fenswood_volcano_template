@@ -28,5 +28,5 @@ nav:
     - "9. Conclusion and Next Steps": 'tutorial/conclusion.md'
   - "Advanced Tutorial":
     - "1. Brief Starling Introduction": 'advanced/starling.md'
-    - "2. fenswood_drone_controller ROS package structure": 'advanced/ros_package.md'
+    - "2. Developing a ROS package": 'advanced/ros_package.md'
     - "3. Packaging your controller into a container  ": 'advanced/containers.md'
