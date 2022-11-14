@@ -3,7 +3,7 @@ theme: readthedocs
 repo_url: https://github.com/StarlingUAS/fenswood_volcano_template
 site_description: 'Fenswood Volcano Template Project'
 docs_dir: 'tutorial'
-copyright: Copyright &copy; 2021 University of Bristol Flight Laboratory
+copyright: Copyright &copy; 2022 University of Bristol Flight Laboratory
 
 markdown_extensions:
   - toc:

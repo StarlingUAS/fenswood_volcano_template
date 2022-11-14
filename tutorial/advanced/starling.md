@@ -1,5 +1,7 @@
 # The Starling framework
 
+[TOC]
+
 [Back to tutorial contents](../README.md#contents)
 
 ## Introduction
