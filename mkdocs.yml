@@ -29,4 +29,5 @@ nav:
   - "Advanced Tutorial":
     - "1. Brief Starling Introduction": 'advanced/starling.md'
     - "2. Developing a ROS package": 'advanced/ros_package.md'
-    - "3. Packaging your controller into a container  ": 'advanced/containers.md'
+    - "3. Packaging your controller into a container": 'advanced/containers.md'
+    - "4. Local Development and Testing": "advanced/local_testing.md"
