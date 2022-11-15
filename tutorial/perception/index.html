@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../../img/favicon.ico" rel="shortcut icon"/>
+<title>8. Adding Perception - Fenswood Volcano Tutorial</title>
+<link href="../../css/theme.css" rel="stylesheet"/>
+<link href="../../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "8. Adding Perception";
+        var mkdocs_page_input_path = "tutorial/perception.md";
+        var mkdocs_page_url = null;
+      </script>
+<script defer="" src="../../js/jquery-3.6.0.min.js"></script>
+<!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href="../.."> Fenswood Volcano Tutorial
+        </a><div role="search">
+<form action="../../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Core Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">1. Getting Started</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../drone_control/">2. Controlling a Drone using Mavlink Over ROS</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../old_school/">3. An Old-School Example</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../simple_class/">4. Implementing the contorller as a class</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modular/">5. A More Modular Controller</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../finite_state/">6. Adding A Finite State Machine</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ros_timer/">7. Using A Ros Timer</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">8. Adding Perception</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#introduction">8.1 Introduction</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#software-deployment">8.2 Software deployment</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-code">8.3 Example code</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#writing-the-image-processing-code">8.3.1 Writing the image processing code</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#telling-ros-where-to-find-it">8.3.2 Telling ROS where to find it</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#telling-ros-to-run-it">8.3.3 Telling ROS to run it</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#installing-the-dependecies-on-the-docker-container">8.3.4 Installing the dependecies on the Docker container</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">8.4 Exercises</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../conclusion/">9. Conclusion and Next Steps</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/starling/">1. Brief Starling Introduction</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/ros_package/">2. Developing a ROS package</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/containers/">3. Packaging your controller into a container</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/local_testing/">4. Local Development and Testing</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../..">Fenswood Volcano Tutorial</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a alt="Docs" class="icon icon-home" href="../.."></a> »</li>
+<li>Core Tutorial »</li>
+<li>8. Adding Perception</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/StarlingUAS/fenswood_volcano_template/edit/master/docs/tutorial/perception.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="adding-perception"><span class="enumerate-headings-plugin enumerate-heading-plugin">8.</span> Adding perception<a class="headerlink" href="#adding-perception" title="Permanent link">¶</a></h1>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="introduction"><span class="enumerate-headings-plugin enumerate-heading-plugin">8.1</span> Introduction<a class="headerlink" href="#introduction" title="Permanent link">¶</a></h2>
+<p>All the other examples in this tutorial focus on controlling the drone.  However, you may decide to close the loop on the control problem using some image processing on the camera feed from the drone.  This tutorial gives you a framework for doing so using the <a href="https://opencv.org/">OpenCV</a> image processing framework.  In doing so, you will also learn how to extend the simulation application to:
+ - install third-party libraries and ROS packages, in this case OpenCV and the associated <a href="http://wiki.ros.org/vision_opencv">vision_opencv</a> ROS package; and
+ - compile and launch multiple ROS nodes within a modular control system.</p>
+<p>OpenCV is a free open-source image processing library.  It offers a variety of tools for analyzing and manipulating images, nicely wrapped in a nice Python interface, with good <a href="https://docs.opencv.org/4.5.5/d6/d00/tutorial_py_root.html">tutorials</a>.  OpenCV is not part of ROS, but others have done the work to provide a simple 'bridge' for converting ROS image messages to OpenCV and back.  There are also various extra tutorials available online, including <a href="https://automaticaddison.com/getting-started-with-opencv-in-ros-2-foxy-fitzroy-python/">this one</a> which I relied on to develop this tutorial.  OpenCV is <em>not</em> the latest all-singing-all-dancing deep learning vision solution - but it is easy to learn and probably enough for finding big red blobs in a green world.</p>
+<p>Other tutorials have emphasized the importance of modularity and the same applies here.  <a href="https://www.parkerklein.com/notes/the-elements-of-programming-style">Each module should do one thing well.</a>  Our <code>controller.py</code> script provides a nice, coherent set of drone control capability but it's already getting long.  It would be cluttered to try and squeeze image processing into it as well, so this example will put the image processing in another file to be run as another ROS node.  Some kind of interface will need to be worked out to share information from the perception node to the controller node - but ROS makes that kind of communication easy.  Keeping the two separate also helps development: one team member can work on control while another works on perception, without creating conflicts.</p>
+<h2 id="software-deployment"><span class="enumerate-headings-plugin enumerate-heading-plugin">8.2</span> Software deployment<a class="headerlink" href="#software-deployment" title="Permanent link">¶</a></h2>
+<p>The tutorial so far has deliberately hidden a lot of the <a href="https://github.com/StarlingUAS">Starling</a> framework around the controller.  You have seen and worked on just the one file <code>controller.py</code> and we have provided some 'magic' that runs that script <em>and</em> a simulator, hooked up together, when you type in that <code>docker-compose...</code> command.  Since all we have been changing is the one file, none of the rest of the framework has changed, and that <code>--build</code> bit on the end of the <code>docker-compose...</code> command has made sure to pick up the edited file each time.  So far so good, but now we are extending the framework, it is time to look further into the 'magic'.  It is covered in depth in the <a href="../../advanced/starling/">Starling overview chapter of the advanced tutorial</a> but briefly, we will deploy the application shown below:</p>
+<p><img alt="Application framework" src="../app.png"/></p>
+<p>The steps to get perception working are:</p>
+<ul>
+<li>write the Python code for the image processing</li>
+<li>tell our <code>fenswood_drone_controller</code> ROS package where to find it</li>
+<li>extend the launch file so the image processor is started along with the controller</li>
+<li>make sure the Docker container for the controller has the necessary dependencies installed</li>
+</ul>
+<blockquote>
+<p>If you do the advanced tutorial, you will learn a bit more about how all of this works together and how you might be able to do some more complex things!</p>
+</blockquote>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="example-code"><span class="enumerate-headings-plugin enumerate-heading-plugin">8.3</span> Example code<a class="headerlink" href="#example-code" title="Permanent link">¶</a></h2>
+<p>To run this example, use <code>docker-compose up --build</code> as before or run the one in the <code>6_perception</code> directory.  The remainder of this section works through each of the steps identified above, corresponding to a particular file.</p>
+<h3 id="writing-the-image-processing-code"><span class="enumerate-headings-plugin enumerate-heading-plugin">8.3.1</span> Writing the image processing code<a class="headerlink" href="#writing-the-image-processing-code" title="Permanent link">¶</a></h3>
+<p>A separate file <a href="https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/image_processor.py"><code>fenswood_drone_controller/fenswood_drone_controller/image_processor.py</code></a> contained the Python code for doing the image processing, such as it is.</p>
+<blockquote>
+<p>Why the repeated name?  It happens a lot in Python.  The outer directory is the ROS package and the inner one is the Python package.  You do need both.</p>
+</blockquote>
+<pre><code>import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Image
+import cv2
+from cv_bridge import CvBridge
+</code></pre>
+<p>The first two imports of <code>rclpy</code> and <code>Node</code> are standard ROS stuff and the same as for the controller, as we will be developing a class for our own ROS node.  The <code>Image</code> class is the standard ROS message type for sharing images.  (Happily for those of us who don't know a MOV from an MPEG, ROS hides all the practical pain of image transport from us.)  The <code>cv2</code> library is the entire OpenCV toolset.  Finally <code>CvBridge</code> is the thing that converts a ROS image message to an OpenCV image object, or <em>vice versa</em>.</p>
+<pre><code>class ImageProcessor(Node):
+
+    def __init__(self):
+        super().__init__('image_processor')
+        self.br = CvBridge()
+</code></pre>
+<p>As for the controller, a new class is defined as a child of the <code>Node</code> class to represent the image processing node.  It calls the parent constructor to get ROS set up.  The only other thing it does it create a <code>CvBridge</code> for later use doing the conversions.</p>
+<pre><code>    def start(self):
+        # set up subscriber for image
+        state_sub = self.create_subscription(Image, 'camera/image_raw', self.image_callback, 10)
+</code></pre>
+<p>The <code>start</code> method will set the node actually working by subscribing to the image topic and running the callback on each response.  This node is completely callback-driven so there is nothing else to do here.</p>
+<p><em>Note:</em> it's usually a bad idea to do lots of work in callbacks, especially on something quite high-rate like a camera feed.  In the exercises, I will ask you to improve upon this.</p>
+<pre><code>    # on receiving image, convert and log information
+    def image_callback(self,msg):
+        img = self.br.imgmsg_to_cv2(msg)
+        # can do OpenCV stuff on img now
+        shp = img.shape # just get the size
+        self.get_logger().info('Got an image of {} x {}'.format(shp[0],shp[1]))
+</code></pre>
+<p>The image callback method does very little for now, but enough to see if everything is working.  The <code>CvBridge</code> created in <code>__init__</code> is used to convert the image message to an OpenCV image object.  All I do is extract its size using the <code>shape</code> property and log it.</p>
+<pre><code>def main(args=None):
+
+    rclpy.init(args=args)
+
+    image_node = ImageProcessor()
+    image_node.start()
+    rclpy.spin(image_node)
+
+if __name__ == '__main__':
+    main()
+</code></pre>
+<p>The rest of the file is almost identical to the controller case.  The <code>main</code> function creates the node object, starts the subscription, and then uses <code>spin</code> to hand over timing to ROS.  The <code>if __name__ ...</code> bit is here out of habit.</p>
+<h3 id="telling-ros-where-to-find-it"><span class="enumerate-headings-plugin enumerate-heading-plugin">8.3.2</span> Telling ROS where to find it<a class="headerlink" href="#telling-ros-where-to-find-it" title="Permanent link">¶</a></h3>
+<p>The <code>setup.py</code> file in the upper <a href="../fenswood_drone_controller">fenswood_drone_controller</a> directory tells ROS where to find the bits of Python it might need, including scripts we want to run.  It's a clumsy set-up but happily we'll only need to edit part...</p>
+<pre><code>from setuptools import setup
+from glob import glob
+
+package_name = "fenswood_drone_controller"
+
+setup(
+    name=package_name,
+    version="0.0.0",
+    packages=[package_name],
+    data_files=[
+        ("share/ament_index/resource_index/packages",["resource/"+package_name]),
+        ("share/" + package_name, ['package.xml']),
+        ("share/" + package_name, glob('launch/*.launch.*'))
+    ],
+    install_requires=["setuptools"],
+    zip_safe=True,
+    maintainer="Robert Clarke",
+    maintainer_email="TODO",
+    description="Example Python controller for Ardupilot at Fenswood",
+    license="TODO",
+    tests_require=["pytest"],
+    entry_points={
+        "console_scripts": [
+            "controller = fenswood_drone_controller.controller:main",
+            "controller_old_school = fenswood_drone_controller.controller_old_school:main",
+            "controller_simple_class = fenswood_drone_controller.controller_simple_class:main",
+            "controller_modular = fenswood_drone_controller.controller_modular:main",
+            "controller_finite_state = fenswood_drone_controller.controller_finite_state:main",
+            "image_processor = fenswood_drone_controller.image_processor:main"
+        ]
+    }
+)
+</code></pre>
+<p>There, that bit right at the end: added to the <code>console_scripts</code> list entry in the <code>entry_points</code> dictionary, the item <code>"image_processor = fenswood_drone_controller.image_processor:main"</code> tells ROS that you run an <code>image_processor</code> node by calling the <code>main</code> function in the <code>image_processor</code> module of the <code>fenswood_drone_controller</code> package.</p>
+<blockquote>
+<p>Please don't ask the general principles behind this - unless you want to get <em>really</em> into Python and ROS packaging, just follow the pattern.</p>
+</blockquote>
+<h3 id="telling-ros-to-run-it"><span class="enumerate-headings-plugin enumerate-heading-plugin">8.3.3</span> Telling ROS to run it<a class="headerlink" href="#telling-ros-to-run-it" title="Permanent link">¶</a></h3>
+<p>Most ROS applications quickly encounter the need to run multiple collaborating nodes.  ROS supports <a href="https://docs.ros.org/en/foxy/How-To-Guides/Launch-file-different-formats.html">various types of <em>launch</em> file</a> to support running complex combinations of things, perhaps with different configurations, using a single command.  You can even <a href="https://docs.ros.org/en/foxy/Tutorials/Launch/Creating-Launch-Files.html">write launch files in Python</a> to do clever conditional stuff, but I prefer the basic XML version for a simple job like ours.  The (updated) launch file is <code>controller.launch.xml</code> living in the <a href="../fenswood_drone_controller/launch">launch</a> subdirectory of the <code>fenswood_drone_controller</code> package directory.  Other files are configured to tell ROS where it lives and to tell Docker to run it on starting our container, so we just need to add the perception node to it.</p>
+<pre><code>&lt;launch&gt;
+
+  &lt;node pkg="fenswood_drone_controller" exec="controller" /&gt;
+
+  &lt;node pkg="fenswood_drone_controller" exec="image_processor" /&gt;
+
+&lt;/launch&gt;
+</code></pre>
+<p>It's pretty simple: the whole XML file contains a big <code>&lt;launch&gt;</code> element to which we have added a second <code>&lt;node&gt;</code> subelement asking ROS to run the <code>image_processor</code> node (same name we used in <code>setup.py</code>) from the <code>fenswood_drone_controller</code> package.</p>
+<h3 id="installing-the-dependecies-on-the-docker-container"><span class="enumerate-headings-plugin enumerate-heading-plugin">8.3.4</span> Installing the dependecies on the Docker container<a class="headerlink" href="#installing-the-dependecies-on-the-docker-container" title="Permanent link">¶</a></h3>
+<p>Recall that the simulation application is a series of Docker  <em>containers</em> running together, like little simulated computers networked together.  While four of the five containers involved are pulled pre-built from the cloud, the <code>controller</code> container that runs the controller and image processor is built locally.  (That's what the <code>--build</code> thing is about.)  The recipe for this container is contained in the <code>Dockerfile</code> in the <a href="../fenswood_drone_controller"><code>fenswood_drone_controller</code> directory</a>.  Noting that each controller is like its own computer, we need to ensure that computer has OpenCV installed to run our mage processor code.  This means editing the <code>Dockerfile</code> as shown below.</p>
+<pre><code>FROM uobflightlabstarling/starling-controller-base:latest
+</code></pre>
+<p>This is the starting point: Starling provides a base recipe (formally an <em>image</em>) for controller development, which this file will then modify.</p>
+<pre><code>RUN apt update
+RUN apt-get install -y ros-foxy-vision-opencv python3-pip
+RUN pip3 install opencv-python
+</code></pre>
+<p>These are the new lines, and they're just like the commands you would type into your Linux computer if you wanted to do this locally.  First update the software list, then install the <code>vision_opencv</code> package for ROS2 version <code>foxy</code>.  Also, since te OpenCV Python libraries are installed using <code>pip</code>, we need to install <code>python3-pip</code> as well.  Finally, <code>pip3</code> is used to install the <code>opencv-python</code> package that lets us import <code>cv2</code>.</p>
+<p>This is not the <a href="https://docs.ros.org/en/foxy/Tutorials/Writing-A-Simple-Py-Publisher-And-Subscriber.html#build-and-run">'proper' way</a> to install dependencies for a ROS package.  You're supposed to define the right dependencies in one of the package files and then use the <code>rosdep</code> tool to install them all.  That would play poorly with our Docker approach though, as every change to the code would trigger a re-install and it would all get rather slow.  Instead, I've taken the pain of finding the dependencies manually, with a little trial and error, so I can do it just once on first building.  This gets into the dark arts of managing a Linux system, which is beyond the scope for learning here.  <em>If you want to use some extra software for the project, please just ask staff for help.</em></p>
+<pre><code>COPY . /ros_ws/src/fenswood_drone_controller
+</code></pre>
+<p>The rest of the file is unchanged from what we provided, but for completeness: this command copies the contents of the local <code>fenswood_drone_controller</code> folder into the container.</p>
+<pre><code>RUN . /ros_ws/install/setup.sh \
+    &amp;&amp; colcon build
+</code></pre>
+<p>These are the standard commands to build our local ROS package.  All the stuff in <code>setup.py</code> is used by the <code>colcon</code> build tool to copy stuff to the right shared folders.</p>
+<pre><code>CMD [ "ros2", "launch", "fenswood_drone_controller", "controller.launch.xml" ]
+</code></pre>
+<p>The final line is the command to run when the container is launched, which is to use ROS to run the launch file discussed above, <em>i.e.</em> to run our two nodes.</p>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="exercises"><span class="enumerate-headings-plugin enumerate-heading-plugin">8.4</span> Exercises<a class="headerlink" href="#exercises" title="Permanent link">¶</a></h2>
+<ol>
+<li>
+<p>Add a ROS timer to the image processor node and use it to log the latest received image every half second, rather than every image received.</p>
+</li>
+<li>
+<p>Send a basic message, maybe just a <a href="https://docs.ros.org/en/api/std_msgs/html/msg/String.html">string</a> with some image information, from the image processor to the controller.  Log the message on both sides so you can be sure it got through.</p>
+</li>
+<li>
+<p>Do some basic image processing on the received image and <em>re-publish it</em> to a new ROS topic.  <a href="https://docs.opencv.org/4.x/d3/df2/tutorial_py_basic_ops.html">This tutorial</a> gives some basics like changing a few pixels around or drawing abox round a region.  <a href="https://automaticaddison.com/getting-started-with-opencv-in-ros-2-foxy-fitzroy-python/#Create_the_Image_Publisher_Node_Python">This tutorial</a> shows the syntax for converting an image back from OpenCV to ROS and publishing it.</p>
+</li>
+</ol>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../ros_timer/" title="7. Using A Ros Timer"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../conclusion/" title="9. Conclusion and Next Steps">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>Copyright © 2022 University of Bristol Flight Laboratory</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/StarlingUAS/fenswood_volcano_template" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../ros_timer/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../conclusion/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script>var base_url = '../..';</script>
+<script defer="" src="../../js/theme_extra.js"></script>
+<script defer="" src="../../js/theme.js"></script>
+<script defer="" src="../../search/main.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../../img/favicon.ico" rel="shortcut icon"/>
+<title>5. A More Modular Controller - Fenswood Volcano Tutorial</title>
+<link href="../../css/theme.css" rel="stylesheet"/>
+<link href="../../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "5. A More Modular Controller";
+        var mkdocs_page_input_path = "tutorial/modular.md";
+        var mkdocs_page_url = null;
+      </script>
+<script defer="" src="../../js/jquery-3.6.0.min.js"></script>
+<!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href="../.."> Fenswood Volcano Tutorial
+        </a><div role="search">
+<form action="../../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Core Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">1. Getting Started</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../drone_control/">2. Controlling a Drone using Mavlink Over ROS</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../old_school/">3. An Old-School Example</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../simple_class/">4. Implementing the contorller as a class</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">5. A More Modular Controller</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#introduction">5.1 Introduction</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-code">5.2 Example code</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">5.3 Exercises</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../finite_state/">6. Adding A Finite State Machine</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ros_timer/">7. Using A Ros Timer</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../perception/">8. Adding Perception</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../conclusion/">9. Conclusion and Next Steps</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/starling/">1. Brief Starling Introduction</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/ros_package/">2. Developing a ROS package</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/containers/">3. Packaging your controller into a container</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/local_testing/">4. Local Development and Testing</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../..">Fenswood Volcano Tutorial</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a alt="Docs" class="icon icon-home" href="../.."></a> »</li>
+<li>Core Tutorial »</li>
+<li>5. A More Modular Controller</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/StarlingUAS/fenswood_volcano_template/edit/master/docs/tutorial/modular.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="a-more-modular-controller"><span class="enumerate-headings-plugin enumerate-heading-plugin">5.</span> A more modular controller<a class="headerlink" href="#a-more-modular-controller" title="Permanent link">¶</a></h1>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="introduction"><span class="enumerate-headings-plugin enumerate-heading-plugin">5.1</span> Introduction<a class="headerlink" href="#introduction" title="Permanent link">¶</a></h2>
+<p>In the previous <a href="../simple_class/">simple class</a> example, a controller class was created, of which the callbacks and the main control thread were methods, and the items of shared data were properties.  The class was a child of the ROS <code>Node</code> class meaning that all the ROS functionality was inherited.  This made a rather elegant structure - but was only the beginning.  In this example, the main steps will be broken out into additional methods of the <code>FenswoodDroneController</code> class, so the main <code>run</code> method can be simpler.  The result is a more <em>modular</em> and extensible solution.  <a href="https://reprog.wordpress.com/2010/03/06/programming-books-part-2-the-elements-of-programming-style/">"Each module should do one thing well."</a>  Achieve that, and you can start re-using those modules to do more complex things, also well.</p>
+<h2 id="example-code"><span class="enumerate-headings-plugin enumerate-heading-plugin">5.2</span> Example code<a class="headerlink" href="#example-code" title="Permanent link">¶</a></h2>
+<p>To run this example:</p>
+<pre><code>docker-compose -f 3_modular/docker-compose-modular.yml up --build
+</code></pre>
+<p>The key file is <a href="https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller_modular.py"><code>fenswood_drone_controller/fenswood_drone_controller/controller_modular.py</code></a>.  Only differences from the <a href="../simple_class/#example-code">first object-oriented solution</a> are highlighted.</p>
+<pre><code>import rclpy
+from rclpy.node import Node
+
+# import message definitions for receiving status and position
+from mavros_msgs.msg import State
+from sensor_msgs.msg import NavSatFix
+# import message definition for sending setpoint
+from geographic_msgs.msg import GeoPoseStamped
+
+# import service definitions for changing mode, arming, take-off and generic command
+from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong
+
+
+class FenswoodDroneController(Node):
+
+    def __init__(self):
+        super().__init__('example_controller')
+        self.last_state = None     # global for last received status message
+        self.last_pos = None       # global for last received position message
+        self.init_alt = None       # global for global altitude at start
+        self.last_alt_rel = None   # global for last altitude relative to start
+</code></pre>
+<p>The code starts off with the same imports and initialization as the <a href="../simple_class/#example-code">simple class implementation</a>.</p>
+<pre><code>        # create service clients for long command (datastream requests)...
+        self.cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
+        while not self.cmd_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('command_int service not available, waiting again...')
+        # ... for mode changes ...
+        self.mode_cli = self.create_client(SetMode, 'mavros/set_mode')
+        while not self.mode_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('set_mode service not available, waiting again...')
+        # ... for arming ...
+        self.arm_cli = self.create_client(CommandBool, 'mavros/cmd/arming')
+        while not self.arm_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('arming service not available, waiting again...')
+        # ... and for takeoff
+        self.takeoff_cli = self.create_client(CommandTOL, 'mavros/cmd/takeoff')
+        while not self.takeoff_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('takeoff service not available, waiting again...')
+        # create publisher for setpoint
+        self.target_pub = self.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
+        # and make a placeholder for the last sent target
+        self.last_target = GeoPoseStamped()
+</code></pre>
+<p>Now, all the clients for services and publishing are created in the constructor <code>__init__()</code>.  This is so they can be used and re-used by methods coming in a bit.  Note the client handles (<em>e.g.</em> <code>self.takeoff_cli</code>) are stored as properties of the object, using <code>self</code>.  This means thay can be accessed by other methods of the same object, again via <code>self</code>.</p>
+<p>Only publishers and service callers are included here.  Subscribers are still left for the <code>run()</code> method as I don't want stuff to start running until later on.</p>
+<p>You <em>could</em> have kept these activities in other methods, creating new clients each time something needs to be published or called.  However, they take work and delay due to interactions with the ROS ecosystem, so it's better to just get them done once at the start.</p>
+<blockquote>
+<p>Arguably, I should have put the <code>wait_for_service</code> calls in <code>run()</code> as well, so an object could be constructed in isolation from ROS if I wanted to.</p>
+</blockquote>
+<pre><code>
+    # on receiving status message, save it to global
+    def state_callback(self,msg):
+        self.last_state = msg
+        self.get_logger().debug('Mode: {}.  Armed: {}.  System status: {}'.format(msg.mode,msg.armed,msg.system_status))
+
+    # on receiving positon message, save it to global
+    def position_callback(self,msg):
+        # determine altitude relative to start
+        if self.init_alt:
+            self.last_alt_rel = msg.altitude - self.init_alt
+        self.last_pos = msg
+        self.get_logger().debug('Drone at {}N,{}E altitude {}m'.format(msg.latitude,
+                                                                        msg.longitude,
+                                                                        self.last_alt_rel))
+
+    def wait_for_new_status(self):
+        """
+        Wait for new state message to be received.  These are sent at
+        1Hz so calling this is roughly equivalent to one second delay.
+        """
+        if self.last_state:
+            # if had a message before, wait for higher timestamp
+            last_stamp = self.last_state.header.stamp.sec
+            for try_wait in range(60):
+                rclpy.spin_once(self)
+                if self.last_state.header.stamp.sec &gt; last_stamp:
+                    break
+        else:
+            # if never had a message, just wait for first one
+            for try_wait in range(60):
+                if self.last_state:
+                    break
+                rclpy.spin_once(self)
+
+</code></pre>
+<p>Callbacks and the <code>wait_for_status()</code> utility method are unchanged: these are already nice simple functions with clear, distinct purposes.</p>
+<pre><code>    def request_data_stream(self,msg_id,msg_interval):
+        cmd_req = CommandLong.Request()
+        cmd_req.command = 511
+        cmd_req.param1 = float(msg_id)
+        cmd_req.param2 = float(msg_interval)
+        future = self.cmd_cli.call_async(cmd_req)
+        rclpy.spin_until_future_complete(self, future)    # wait for response
+</code></pre>
+<p>Above is the first of the new methods to take on a specific task: in the case, requesting a data stream.  "Make sure every module hides something" is <a href="https://www.parkerklein.com/notes/the-elements-of-programming-style">another good guideline</a>.  Here, we hide from later software that requesting data involves all this complicated stuff about long commands and service calls.  The function takes the desired message <code>msg_id</code> and the message interval <code>msg_interval</code> as arguments so future calls can request different messages and rates.  With the relevant service client already set up in the <code>__init__</code> constructor, we can go straight ahead and call <code>self.cmd_cli.call_async()</code> without the set-up and waiting.</p>
+<pre><code>    def change_mode(self,new_mode):
+        mode_req = SetMode.Request()
+        mode_req.custom_mode = new_mode
+        future = self.mode_cli.call_async(mode_req)
+        rclpy.spin_until_future_complete(self, future)    # wait for response
+</code></pre>
+<p>Another helper method, <code>change_mode</code> does exactly what it says in the name, again hiding the associated ROS details under a simple Python call.  For re-use, callers provide the <code>new_mode</code> as an argument.</p>
+<pre><code>    def arm_request(self):
+        arm_req = CommandBool.Request()
+        arm_req.value = True
+        future = self.arm_cli.call_async(arm_req)
+        rclpy.spin_until_future_complete(self, future)
+</code></pre>
+<p>Hopefully the pattern is emerging: each of the steps of our control flow are now going to be single lines, calling the associated methods and hiding the ROS interfaces.  <code>arm_request</code> doesn't need any arguments as it always does the same job.</p>
+<pre><code>    def takeoff(self,target_alt):
+        takeoff_req = CommandTOL.Request()
+        takeoff_req.altitude = target_alt
+        future = self.takeoff_cli.call_async(takeoff_req)
+        rclpy.spin_until_future_complete(self, future)
+
+    def flyto(self,lat,lon,alt):
+        self.last_target.pose.position.latitude = lat
+        self.last_target.pose.position.longitude = lon
+        self.last_target.pose.position.altitude = alt
+        self.target_pub.publish(self.last_target)
+        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt))
+
+</code></pre>
+<p>Methods for <code>take_off</code> and <code>flyto</code> are hopefully self-explanatory, and show how Python code can just about comment itself if you choose the names clearly.  Note that <code>flyto()</code> saves the commanded target to a property <code>last_target</code> for later use.</p>
+<blockquote>
+<p>I was trying to follow the <a href="https://www.python.org/dev/peps/pep-0008/#function-and-variable-names">Python style guide on function names</a> so <code>flyto</code> really ought to be <code>fly_to</code>.  I recommend you adopt a standard and stick to it.  For all it can feel pedantic sometimes, it really does help when working on code as a group.</p>
+</blockquote>
+<pre><code>    def run(self):
+        # set up two subscribers, one for vehicle state...
+        state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
+        # ...and the other for global position
+        pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
+
+        # first wait for the system status to become 3 "standby"
+        # see https://mavlink.io/en/messages/common.html#MAV_STATE
+        for try_standby in range(60):
+            self.wait_for_new_status()
+            if self.last_state.system_status==3:
+                self.get_logger().info('Drone ready for flight')
+                break
+</code></pre>
+<p>The <code>run()</code> method starts off just as always, launching the subscriptions and waiting for the right status.</p>
+<pre><code>        # send command to request regular position updates
+        self.request_data_stream(33, 1000000)
+        self.get_logger().info('Requested position stream')
+
+        # now change mode to GUIDED
+        self.change_mode("GUIDED")
+        self.get_logger().info('Request sent for GUIDED mode.')
+</code></pre>
+<p>Now the next two steps, asking for the position data and changing to GUIDED, are just two lines of code plus associated logging.  It's much easier to follow the intent than before with the complexity of all the ROS moved to the methods.</p>
+<blockquote>
+<p>Why did I not put the <code>get_logger().info()</code> calls in the methods too?  Don't know really - I did for <code>flyto</code> but not for the other methods.  That inconsistency irks me now, but it made sense at the time.</p>
+</blockquote>
+<pre><code>        # next, try to arm the drone
+        # keep trying until arming detected in state message, or 60 attempts
+        for try_arm in range(60):
+            self.arm_request()
+            self.get_logger().info('Arming request sent.')
+            self.wait_for_new_status()
+            if self.last_state.armed:
+                self.get_logger().info('Arming successful')
+                # armed - grab init alt for relative working
+                if self.last_pos:
+                    self.init_alt = self.last_pos.altitude
+                break
+        else:
+            self.get_logger().error('Failed to arm')
+</code></pre>
+<p>The arming step is slightly simpler with just the <code>arm_request</code> call doing the work.</p>
+<pre><code>        # take off and climb to 20.0m at current location
+        self.takeoff(20.0)
+        self.get_logger().info('Takeoff request sent.')
+</code></pre>
+<p>Take off is now just one line calling the earlier method, plus a log record.</p>
+<pre><code>        # wait for drone to reach desired altitude, or 60 attempts
+        for try_alt in range(60):
+            self.wait_for_new_status()
+            self.get_logger().info('Climbing, altitude {}m'.format(self.last_alt_rel))
+            if self.last_alt_rel &gt; 19.0:
+                self.get_logger().info('Close enough to flight altitude')
+                break
+
+        # move drone by sending setpoint message
+        self.flyto(51.423, -2.671, self.init_alt - 30.0) # unexplained correction factor on altitude
+</code></pre>
+<p>Moving the drone is again just a single line.</p>
+<pre><code>        # wait for drone to reach desired position, or timeout after 60 attempts
+        for try_arrive in range(60):
+            self.wait_for_new_status()
+            d_lon = self.last_pos.longitude - self.last_target.pose.position.longitude
+            d_lat = self.last_pos.latitude - self.last_target.pose.position.latitude
+            self.get_logger().info('Target error {},{}'.format(d_lat,d_lon))
+            if abs(d_lon) &lt; 0.0001:
+                if abs(d_lat) &lt; 0.0001:
+                    self.get_logger().info('Close enough to target delta={},{}'.format(d_lat,d_lon))
+                    break
+</code></pre>
+<p>Monitoring progress is largely unchanged, apart from using the stored <code>last_target</code> property to check distance.  This actually feels clumsy compared to the rest of the code and I will ask you to improve upon it in the exercises.</p>
+<pre><code>        # return home and land
+        self.change_mode("RTL")
+        self.get_logger().info('Request sent for RTL mode.')
+</code></pre>
+<p>The <code>change_mode</code> method is used again to head home using RTL.</p>
+<pre><code>        # now just serve out the time until process killed
+        while rclpy.ok():
+            rclpy.spin_once(self)
+
+
+def main(args=None):
+
+    rclpy.init(args=args)
+
+    controller_node = FenswoodDroneController()
+    controller_node.run()
+
+
+if __name__ == '__main__':
+    main()
+</code></pre>
+<p>The remainder is unchanged.</p>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="exercises"><span class="enumerate-headings-plugin enumerate-heading-plugin">5.3</span> Exercises<a class="headerlink" href="#exercises" title="Permanent link">¶</a></h2>
+<p>All exercises involve editing the file <a href="https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller_modular.py"><code>fenswood_drone_controller/fenswood_drone_controller/controller_modular.py</code></a></p>
+<ol>
+<li>
+<p>Create a method to move the camera.  It should publish a <a href="http://docs.ros.org/en/noetic/api/std_msgs/html/msg/Float32.html">message of type <code>std_msgs/Float32</code></a> to the <code>/vehicle_1/gimbal_tilt_cmd</code> topic to move the camera, with <code>0</code> in the <code>data</code> field being horizontal and <code>1.57</code> being straight downwards.</p>
+</li>
+<li>
+<p>Add a method to measure distance (in some simple way) to the last target.  Use it to simplify the code in the <code>run()</code> method.  Then add a stage to your code that flies to a second target after the first has been reached.</p>
+</li>
+</ol>
+<blockquote>
+<p>None of the methods in the example so far returned a value!  If you include a <code>return x</code> statement in the method, you can use <code>x = self.my_method(stuff)</code> to access it.  Use <code>return a,b,c</code> and <code>a,b,c = self.my_method(stuff)</code> to return multiple values , if that's required.</p>
+</blockquote>
+<ol>
+<li>Add a request for <a href="https://mavlink.io/en/messages/common.html#LOCAL_POSITION_NED">message 32, LOCAL_POSITION_NED</a>.  Observe what happens on foxglove looking at topic <code>/vehicle_1/mavros/local_position/pose</code>.  In the code, add a subscriber to <code>/vehicle_1/mavros/local_position/pose</code> and try using this local altitude to track climb progress in <code>run()</code>.</li>
+</ol>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../simple_class/" title="4. Implementing the contorller as a class"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../finite_state/" title="6. Adding A Finite State Machine">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>Copyright © 2022 University of Bristol Flight Laboratory</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/StarlingUAS/fenswood_volcano_template" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../simple_class/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../finite_state/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script>var base_url = '../..';</script>
+<script defer="" src="../../js/theme_extra.js"></script>
+<script defer="" src="../../js/theme.js"></script>
+<script defer="" src="../../search/main.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>

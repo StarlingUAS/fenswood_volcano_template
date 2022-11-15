@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../../img/favicon.ico" rel="shortcut icon"/>
+<title>1. Brief Starling Introduction - Fenswood Volcano Tutorial</title>
+<link href="../../css/theme.css" rel="stylesheet"/>
+<link href="../../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "1. Brief Starling Introduction";
+        var mkdocs_page_input_path = "advanced/starling.md";
+        var mkdocs_page_url = null;
+      </script>
+<script defer="" src="../../js/jquery-3.6.0.min.js"></script>
+<!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href="../.."> Fenswood Volcano Tutorial
+        </a><div role="search">
+<form action="../../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Core Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/getting_started/">1. Getting Started</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/drone_control/">2. Controlling a Drone using Mavlink Over ROS</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/old_school/">3. An Old-School Example</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/simple_class/">4. Implementing the contorller as a class</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/modular/">5. A More Modular Controller</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/finite_state/">6. Adding A Finite State Machine</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/ros_timer/">7. Using A Ros Timer</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/perception/">8. Adding Perception</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/conclusion/">9. Conclusion and Next Steps</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal current" href="./">1. Brief Starling Introduction</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#introduction">10.1 Introduction</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-starling-v2">10.2 What is Starling ...v2</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker-compose">10.2.1 Docker Compose</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#starling-application-containers">10.2.2 Starling Application Containers</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#what-actually-is-starling">10.3 What actually is Starling</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">10.4 Exercises</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ros_package/">2. Developing a ROS package</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../containers/">3. Packaging your controller into a container</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../local_testing/">4. Local Development and Testing</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../..">Fenswood Volcano Tutorial</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a alt="Docs" class="icon icon-home" href="../.."></a> »</li>
+<li>Advanced Tutorial »</li>
+<li>1. Brief Starling Introduction</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/StarlingUAS/fenswood_volcano_template/edit/master/docs/advanced/starling.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="the-starling-framework"><span class="enumerate-headings-plugin enumerate-heading-plugin">10.</span> The Starling framework<a class="headerlink" href="#the-starling-framework" title="Permanent link">¶</a></h1>
+<div class="toc">
+<ul>
+<li><a href="#the-starling-framework">10. The Starling framework</a><ul>
+<li><a href="#introduction">10.1 Introduction</a></li>
+<li><a href="#what-is-starling-v2">10.2 What is Starling ...v2</a><ul>
+<li><a href="#docker-compose">10.2.1 Docker Compose</a></li>
+<li><a href="#starling-application-containers">10.2.2 Starling Application Containers</a></li>
+</ul>
+</li>
+<li><a href="#what-actually-is-starling">10.3 What actually is Starling</a></li>
+<li><a href="#exercises">10.4 Exercises</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="introduction"><span class="enumerate-headings-plugin enumerate-heading-plugin">10.1</span> Introduction<a class="headerlink" href="#introduction" title="Permanent link">¶</a></h2>
+<p>This tutorial template is built on the <a href="https://github.com/StarlingUAS">Starling</a> framework which combines open-source components to provide a realistic, cross-platform simulation for drone flight. So far from the standard tutorial, you should be aware of the following technologies.</p>
+<ul>
+<li><a href="http://gazebosim.org/">Gazebo</a>, a physical and visual simulation package</li>
+<li><a href="https://ardupilot.org/">Ardupilot</a>, a free autopilot software with <a href="https://mavlink.io/en/">MAVLINK</a> interfacing and <a href="https://ardupilot.org/copter/docs/common-simulation.html">simulation</a> capability</li>
+<li><a href="https://www.ros.org/">ROS</a>, a popular software framework for robot interfacing, plus the <a href="http://wiki.ros.org/mavros">MAVROS</a> package for connecting MAVLINK drones to ROS.</li>
+<li><a href="https://opencv.org/">OpenCV</a>, an image processing library with Python support</li>
+<li><a href="https://www.docker.com/">Docker</a>, a system for packaging and deploying</li>
+</ul>
+<blockquote>
+<p>Surely there's a simpler way?  Almost certainly, but you wouldn't learn so much.  These are the standard tools of the robotics trade, and while it'll take you a while to learn them, the skills you get will go far beyond this project.  This way also means we can do more with Starling, like migrate controllers from simulation to actual flight.</p>
+</blockquote>
+<p><img alt="Application framework" src="../app.png"/></p>
+<p>In this tutorial we will providing a bit more detail into what Starling <em>actually</em> is and providing a brief overview of some of the components that comprise Starling, and how they work together to provide you a platform to build your applications upon.</p>
+<h2 id="what-is-starling-v2"><span class="enumerate-headings-plugin enumerate-heading-plugin">10.2</span> What is Starling ...v2<a class="headerlink" href="#what-is-starling-v2" title="Permanent link">¶</a></h2>
+<p>I'm sure when we mention Starling, it's still a nebulous thing thats quite hard to define right now. When we previously introduced Starling, we simply said that it's a thing we developed which allows you to quickly and easily install and run a UAV simulation within a simulated environment to allow you to develop and test your contorllers for this project.</p>
+<p>Now you hopefully have a bit more experience in using the stuff that <em>Starling</em> provides, you might be wondering whether that's actually the whole story - and you'd be right! Let's first recap the parts of Starling you will have touched.</p>
+<h3 id="docker-compose"><span class="enumerate-headings-plugin enumerate-heading-plugin">10.2.1</span> Docker Compose<a class="headerlink" href="#docker-compose" title="Permanent link">¶</a></h3>
+<p>Multiple times in this tutorial you should have run the <code>docker-compose up --build</code> command that starts the simulation. If you have a look inside one of these compose files, you'll see something like the following yaml format file:</p>
+<pre><code class="language-yaml">services:
+  controller:
+    build: ../fenswood_drone_controller
+
+  simhost:
+    image: uobflightlabstarling/starling-sim-iris-ap-fenswood:latest
+    environment:
+      - AP_SITL_HOST=sitl
+    ports:
+      - "8080:8080"
+
+  sitl:
+    image: uobflightlabstarling/starling-sim-ardupilot-copter:v0.0.8
+    environment:
+      - ...
+
+  mavros:
+    image: uobflightlabstarling/starling-mavros:v0.1.0
+    command: ros2 launch launch/mavros_bridge.launch.xml
+    environment:
+      - ...
+    ports:
+      - "5761:5761"
+
+  rosbridge-suite:
+    image: uobflightlabstarling/rosbridge-suite:v0.1.0
+    ports:
+      - "9090:9090"
+</code></pre>
+<p>Firstly we note that this configuration uses a file format known as yaml, as opposed to json or xml. It uses tabs/indentation to denote groupings of key-value pairs or lists. The configuration specifies a set of services which we have named <code>controller</code>, <code>simhost</code>, <code>sitl</code>, <code>mavros</code> and <code>rosbridge-suite</code>. Each service defines an application container to be run all at the same time, giving us the 'recipe' for what containers to run to generate this application. Docker-compose launches all of these <em>containers</em> together, a bit like starting a set of virtual computers which are all networked together.</p>
+<p>Most of the application containers, such as <code>simhost</code>, <code>sitl</code>, <code>mavros</code> and <code>rosbridge-suite</code> are defined by their <code>image</code> field which specifies the particular container to download and run. The other fields such as <code>environment</code> and <code>port</code> are used to speficy environment variables and ports respectively for the image.</p>
+<p>The <code>controller</code> is a special container which is built directly by docker-compose. The <code>build</code> field specifies a path to the <code>Dockerfile</code> which containers the instructions for building the application. In this case, the application is your fenswood drone control ros nodes which you have been modifying in the earlier tutorials. Specifying <code>--build</code> on the end of <code>docker-compose</code> requests docker compose to re-build this controller application container.</p>
+<h3 id="starling-application-containers"><span class="enumerate-headings-plugin enumerate-heading-plugin">10.2.2</span> Starling Application Containers<a class="headerlink" href="#starling-application-containers" title="Permanent link">¶</a></h3>
+<p>Apart from the <code>controller</code> which contains your own application code, all of the other application containers are provided by <em>Starling</em>.</p>
+<ul>
+<li><code>simhost</code>: <code>uobflightlabstarling/starling-sim-iris-ap-fenswood:latest</code><ul>
+<li><a href="http://gazebosim.org/">Gazebo</a>, the physics simulator.  Given commands from the autopilot, it simulates how the drone moves.  Gazebo also provides graphics, simulating the drone cemra feed and sending it to ROS, and providing a representation of the world for us to spy on via the browser interface on <code>localhost:8080</code>.</li>
+<li>In particular this application container is from <a href="https://github.com/StarlingUAS/FenswoodScenario">FenswoodScenario</a> which includes the Fenswood map, along with the simulation elements needed to represent this task.</li>
+</ul>
+</li>
+<li><code>sitl</code>: <code>uobflightlabstarling/starling-sim-ardupilot-copter:latest</code><ul>
+<li><a href="https://ardupilot.org/">Ardupilot</a>, a free autopilot software with <a href="https://mavlink.io/en/">MAVLINK</a> interfacing and <a href="https://ardupilot.org/copter/docs/common-simulation.html">simulation</a> capability.</li>
+<li>This application container automatically finds and connects to the simulator, spawns a model and connects the software autopilot running Ardupilot to the now spawned gazebo model.</li>
+</ul>
+</li>
+<li><code>mavros</code>: <code>uobflightlabstarling/starling-mavros:latest</code><ul>
+<li><a href="http://wiki.ros.org/mavros">MAVROS</a> package for connecting MAVLINK drones to ROS.</li>
+<li>This application container automatically starts and connects the SITL as if it was a real drone. It then provides a ROS2 Foxy api for user applications to interact with the simulated drone.</li>
+<li>It also serves to forward MAVLINK to a ground station or a PyMavlink application.</li>
+</ul>
+</li>
+<li><code>rosbridge-suite</code>: <code>uobflightlabstarling/rosbridge-suite:latest</code><ul>
+<li><a href="https://github.com/RobotWebTools/rosbridge_suite">Rosbridge-suite</a> package for translating ROS2 packets into JSON for communication with web base ROS2 (roslibjs)</li>
+<li>This application container forwards ROS2 comms over to web based applications such as <a href="https://foxglove.dev/">Foxglove Studio</a> or your own web based applications such as the <a href="https://github.com/StarlingUAS/starling_ui_example">Starling example ui</a>.</li>
+</ul>
+</li>
+</ul>
+<p>Each of these application containers are built using <a href="https://www.docker.com/">Docker</a> and uploaded onto Docker Hub publically so they are available to all to download and use.</p>
+<p>Starling uses Docker to package up the simulation framework and other applications for use on different computers.  I found the <a href="https://docs.duckietown.org/DT19/software_devel/out/docker_intro.html">Duckietown introduction</a> really good for getting a feel for Docker. We'll go into more detail in what Docker actually is in the next tutorial.</p>
+<p>You may have also noticed, readin through the above, we mention "automatically" a lot in the function of some of these containers. Usefully for you, many of the above containers have extra configuration and startup steps above and beyond the individual base applications to ensure that the usage and interconnectivity of all the different parts of the simulations are smooth and hassle free!</p>
+<blockquote>
+<p><em>Note</em> It's useful to keep the idea that each container has a custom startup sequence. For more complex tasks and modifications, you may be able to leverage this paradigm. It is also an avenue to consider when bug hunting integration testing your application.</p>
+</blockquote>
+<h2 id="what-actually-is-starling"><span class="enumerate-headings-plugin enumerate-heading-plugin">10.3</span> What actually is Starling<a class="headerlink" href="#what-actually-is-starling" title="Permanent link">¶</a></h2>
+<p>Even for the extended purpose of this advanced tutorial, the above should be sufficient background knowledge.</p>
+<p>However for completeness, here we finally describe what exactly Starling is.</p>
+<p>Starling is an end to end, modular, containerised UAV infrastucture designed to facilitate the local development, testing and deployment of Single and Multi-UAV systems from simulation to the Bristol Robotics Lab Flight Arena and Fenswwod farm. It will hopefully allow for a more approachable development workflow to enable more researchers to fly UAVs in a safe, reproducable and controllable manner.</p>
+<p><img alt="Starling Architecture" src="../SimpleArch.png"/></p>
+<p>This diagram describes the full intended architecture of the usage of Starling in a multi-vehicle use case. It includes another deployment layer above which you will not need to know about for the purpose of this project. For those who really want to read further, <a href="https://starlinguas.github.io/starling_controller_templates/">check out this further tutorial</a></p>
+<p>Just keep in mind that Starling has been developed for many uses, of which this project is but one. While complex, the design allows for flexibility for use in many places!</p>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="exercises"><span class="enumerate-headings-plugin enumerate-heading-plugin">10.4</span> Exercises<a class="headerlink" href="#exercises" title="Permanent link">¶</a></h2>
+<ol>
+<li>
+<p>Have a browser of the Starling projects available on github (<a href="https://github.com/StarlingUAS">StarlingUAS</a>), as well as the containers available on the <code>uobflightlabstarling</code> organisation on <a href="https://hub.docker.com/repository/docker/uobflightlabstarling/starling-sim-iris-ap">Docker Hub</a>. (You may need to create an account - this may come in handy during this project).</p>
+</li>
+<li>
+<p>Change the port number for simhost in one of your docker-compose files and run it. Try and navigate to it in the browser.</p>
+</li>
+<li>
+<p>There exists an example web user interface as the image <code>uobflightlabstarling/starling-ui-example:latest</code>. Add a new entry in your docker-compose file so that you can also run this example ui as part of your simulation.  Note that you will need to enable ports 9090 and 3000 before you can access the UI from your browser.</p>
+</li>
+</ol>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../../tutorial/conclusion/" title="9. Conclusion and Next Steps"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../ros_package/" title="2. Developing a ROS package">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>Copyright © 2022 University of Bristol Flight Laboratory</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/StarlingUAS/fenswood_volcano_template" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../../tutorial/conclusion/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../ros_package/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script>var base_url = '../..';</script>
+<script defer="" src="../../js/theme_extra.js"></script>
+<script defer="" src="../../js/theme.js"></script>
+<script defer="" src="../../search/main.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>

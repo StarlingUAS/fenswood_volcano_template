@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="Fenswood Volcano Template Project" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Fenswood Volcano Tutorial</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Fenswood Volcano Template Tutorials";
+        var mkdocs_page_input_path = "README.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Fenswood Volcano Tutorial
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Core Tutorial</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorial/getting_started/">1. Getting Started</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorial/drone_control/">2. Controlling a Drone using Mavlink Over ROS</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorial/old_school/">3. An Old-School Example</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorial/simple_class/">4. Implementing the contorller as a class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorial/modular/">5. A More Modular Controller</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorial/finite_state/">6. Adding A Finite State Machine</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorial/ros_timer/">7. Using A Ros Timer</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorial/perception/">8. Adding Perception</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="tutorial/conclusion/">9. Conclusion and Next Steps</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced Tutorial</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="advanced/starling/">1. Brief Starling Introduction</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="advanced/ros_package/">2. Developing a ROS package</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="advanced/containers/">3. Packaging your controller into a container</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="advanced/local_testing/">4. Local Development and Testing</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Fenswood Volcano Tutorial</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Fenswood Volcano Template Tutorials</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/StarlingUAS/fenswood_volcano_template/edit/master/docs/README.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="fenswood-volcano-template-tutorials">Fenswood Volcano Template Tutorials<a class="headerlink" href="#fenswood-volcano-template-tutorials" title="Permanent link">&para;</a></h1>
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<p>This repository provides a template and tutorial to get you started writing code and running simulations for the Group Project in Aerial Robotics, based on the Fenswood Volcano scenario.</p>
+<p>In this tutorial, you will learn how to write code in Python to interface with the (simulated) drone using ROS.  In particular, you will learn the newer ROS2 methods, which offer improved security and scalability.  On the way, you will learn the fundamentals of controlling a drone through a standard autopilot.</p>
+<blockquote>
+<p>You will also need to do little bits of Linux and Docker 'magic' to make the application work.  You are not expected to master these aspects: ask for help if they cause problems.  The primary learning objectives here are drone control, Python and ROS.</p>
+<p>In the examples, a drone takes off, moves to a target location, and then flies home.  In the later <code>perception</code> example, some very basic information is gathered from its camera image.  Together, these examples give you all the building blocks you will need to carry out the project.</p>
+</blockquote>
+<p>Once you are more confident with writing writing code in Python and controlling your drone in ROS, the advanced tutorial will then slowly start peeling back the layers of the Linux and Docker 'magic' which you have been using. <strong>You are not expected to master these aspects</strong>. These advanced topics will give you a greater understanding of the underlying system if you wish to achieve more complex behaviours.</p>
+<p>This tutorial is part 2 of two tutorials written for the Fenswood Scenario</p>
+<ol>
+<li>Basics of Linux, ROS and Docker on this site (starting here):<ul>
+<li><a href="https://starlinguas.github.io/FenswoodScenario/tutorials/fenswood_scenario/tutorials/intro_to_linux">https://starlinguas.github.io/FenswoodScenario/tutorials/fenswood_scenario/</a></li>
+<li>Also includes simulator specific documentation.</li>
+</ul>
+</li>
+<li>Fenswood Volcano Template Tutorials where you will learn how to create and build your controller<ul>
+<li><a href="https://starlinguas.github.io/fenswood_volcano_template/">https://starlinguas.github.io/fenswood_volcano_template/</a></li>
+</ul>
+</li>
+</ol>
+<h2 id="how-to-use-this-tutorial">How to use this tutorial<a class="headerlink" href="#how-to-use-this-tutorial" title="Permanent link">&para;</a></h2>
+<p>Inspired by the <a href="https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber">minimal ROS2 examples</a>, this tutorial takes you through several iterations of code with almost the same functionality.  A full working example is provided in each case with a detailed description of the code.  The section below shows the contents and learning obectives for each stage of the tutorial.  If you are really confident on ROS concepts and object-oriented programming in Python, go straight to the ROS timer tutorial.  Otherwise, you are advised to simply work through from start to finish <em>but</em> you might find some stages easier than others, depending on your past experience.</p>
+<p>Each tutorial stage comes with some exercises for you to add to the code yourself.  To test your solutions, the simulation is always started using <code>docker-compose [-f &lt;some-file&gt;] up --build</code> and then stopped using <code>Ctrl+C</code>.  Use the terminal window output, foxglove studio, or the Docker Desktop (Windows and Mac only) to inspect the results.  Don't forget the <code>--build</code>.  Otherwise, your changes don't get built into the simulation, and you're just running the same code over and over.</p>
+<p>There are countless links in the tutorials.  These provide extra information, background and sources, but are not essential reading.  Follow them if you are interested, but do not feel compelled to digest each one.</p>
+<h2 id="contents">Contents<a class="headerlink" href="#contents" title="Permanent link">&para;</a></h2>
+<h3 id="tutorial">Tutorial<a class="headerlink" href="#tutorial" title="Permanent link">&para;</a></h3>
+<ol>
+<li><a href="tutorial/getting_started/">Getting started</a><ul>
+<li>Learn how to install and run the simulation</li>
+</ul>
+</li>
+<li><a href="tutorial/drone_control/">Drone control</a><ul>
+<li>Learn the key steps in flying a drone using Ardupilot and ROS.</li>
+</ul>
+</li>
+<li><a href="tutorial/old_school/">Old school</a><ul>
+<li>Learn how to control the drone using ROS from Python</li>
+</ul>
+</li>
+<li><a href="tutorial/simple_class/">A simple class</a><ul>
+<li>Learn how to use a Python class as a better drone controller</li>
+</ul>
+</li>
+<li><a href="tutorial/modular/">A better, more modular class</a><ul>
+<li>Learn how to use a more modular programming approach to improve your Python class</li>
+</ul>
+</li>
+<li><a href="tutorial/finite_state/">Finite state machine</a><ul>
+<li>Learn how to use a finite state machine as your decision-making engine</li>
+</ul>
+</li>
+<li><a href="tutorial/ros_timer/">ROS timer</a><ul>
+<li>Learn how to use ROS2 built-in timer to manage the finite state machine execution</li>
+</ul>
+</li>
+<li><a href="tutorial/perception/">Perception</a><ul>
+<li>Learn how to add a second process or 'node' to the ROS application (ROS)</li>
+<li>Learn how to install a third-party library in the Volcano application (Docker)</li>
+<li>Learn how to access the camera image ready for vision processing (OpenCV)</li>
+</ul>
+</li>
+</ol>
+<h3 id="advanced-tutorial">Advanced Tutorial<a class="headerlink" href="#advanced-tutorial" title="Permanent link">&para;</a></h3>
+<ol>
+<li><a href="advanced/starling/">Starling</a><ul>
+<li>Learn what exactly Starling is and how to configure elements of it.</li>
+</ul>
+</li>
+<li><a href="advanced/ros_package/">Developing a ROS package</a><ul>
+<li>Learn about ROS packages and how changes get incorporated</li>
+<li>Learn how to write multi-file ros nodes</li>
+</ul>
+</li>
+<li><a href="advanced/containers/">Containerising your controller</a><ul>
+<li>Learn what a container is, why we use them and how to run your application as a container.</li>
+</ul>
+</li>
+<li><a href="advanced/local_testing/">Local development and testing</a><ul>
+<li>Learn how to make your development more efficient by splitting the simulator and controller</li>
+<li>Learn how to use Makefiles in your development</li>
+</ul>
+</li>
+</ol>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>Copyright &copy; 2022 University of Bristol Flight Laboratory</p>
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/StarlingUAS/fenswood_volcano_template" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme_extra.js" defer></script>
+    <script src="js/theme.js" defer></script>
+      <script src="search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.4.2
+Build Date UTC : 2022-11-15 10:40:00.270984+00:00
+-->

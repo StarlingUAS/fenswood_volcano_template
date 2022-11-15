@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../../img/favicon.ico" rel="shortcut icon"/>
+<title>2. Controlling a Drone using Mavlink Over ROS - Fenswood Volcano Tutorial</title>
+<link href="../../css/theme.css" rel="stylesheet"/>
+<link href="../../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "2. Controlling a Drone using Mavlink Over ROS";
+        var mkdocs_page_input_path = "tutorial/drone_control.md";
+        var mkdocs_page_url = null;
+      </script>
+<script defer="" src="../../js/jquery-3.6.0.min.js"></script>
+<!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href="../.."> Fenswood Volcano Tutorial
+        </a><div role="search">
+<form action="../../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Core Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">1. Getting Started</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">2. Controlling a Drone using Mavlink Over ROS</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#introduction">2.1 Introduction</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-steps">2.2 Example steps</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">2.3 Exercises</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../old_school/">3. An Old-School Example</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../simple_class/">4. Implementing the contorller as a class</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modular/">5. A More Modular Controller</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../finite_state/">6. Adding A Finite State Machine</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ros_timer/">7. Using A Ros Timer</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../perception/">8. Adding Perception</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../conclusion/">9. Conclusion and Next Steps</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/starling/">1. Brief Starling Introduction</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/ros_package/">2. Developing a ROS package</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/containers/">3. Packaging your controller into a container</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/local_testing/">4. Local Development and Testing</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../..">Fenswood Volcano Tutorial</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a alt="Docs" class="icon icon-home" href="../.."></a> »</li>
+<li>Core Tutorial »</li>
+<li>2. Controlling a Drone using Mavlink Over ROS</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/StarlingUAS/fenswood_volcano_template/edit/master/docs/tutorial/drone_control.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="controlling-an-ardupilot-drone-using-mavlink-over-ros"><span class="enumerate-headings-plugin enumerate-heading-plugin">2.</span> Controlling an Ardupilot drone using MAVLINK over ROS<a class="headerlink" href="#controlling-an-ardupilot-drone-using-mavlink-over-ros" title="Permanent link">¶</a></h1>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="introduction"><span class="enumerate-headings-plugin enumerate-heading-plugin">2.1</span> Introduction<a class="headerlink" href="#introduction" title="Permanent link">¶</a></h2>
+<p>The application includes a representation of the <a href="https://ardupilot.org/copter/docs/introduction.html">Ardupilot copter</a> autopilot, a free open-source product in common use in aerial robotics both commercially and in research.  Instead of running on a physical autopilot like the <a href="https://pixhawk.org/">Pixhawk</a>, the application uses its <a href="https://ardupilot.org/copter/docs/common-simulation.html">simulation capability</a> to run it on your computer.  Hence you must learn the 'fly the autopilot'.</p>
+<blockquote>
+<p>While the standard interface for the drone is <a href="https://mavlink.io/en/">MAVLINK</a>, you will interact using ROS, with the conversion handled by the <a href="http://wiki.ros.org/mavros">MAVROS package</a>.</p>
+</blockquote>
+<h2 id="example-steps"><span class="enumerate-headings-plugin enumerate-heading-plugin">2.2</span> Example steps<a class="headerlink" href="#example-steps" title="Permanent link">¶</a></h2>
+<p>These are the steps performed by the example code.  All versions use these same steps.  To follow along, I recommend running the <code>old_school</code> version using</p>
+<pre><code>docker-compose -f docker-compose-old-school.yml up --build
+</code></pre>
+<p>and then using <a href="https://studio.foxglove.dev" target="_blank">foxglove</a> (see <a href="../../#introspecting-ros">Introspecting ROS</a>).  You should see reports on the ROS logs about progress through the steps.</p>
+<ol>
+<li>
+<p>Wait for the autopilot to initialize, indicated by a <code>system_status</code> value of 3, <a href="https://mavlink.io/en/messages/common.html#MAV_STATE_STANDBY"><code>MAV_STATE_STANDBY</code></a>, on the <a href="http://wiki.ros.org/mavros#mavros.2FPlugins.sys_status"><code>/vehicle_1/mavros/state</code></a> ROS topic.</p>
+</li>
+<li>
+<p>Request regular updates on global (GPS) position.  While most off-the-shelf control software takes care of this, our code needs to explicitly <a href="https://ardupilot.org/dev/docs/mavlink-requesting-data.html">request this information</a> from the autopilot.  It is done by sending a custom MAVLINK message using the <a href="http://wiki.ros.org/mavros#mavros.2FPlugins.command"><code>/vehicle_1/mavros/cmd/command</code></a> ROS service.</p>
+<blockquote>
+<p>There is also a local position available, in Cartesian coordinates relative to the home position.  This has some advantages, especially for altitude, but would take more work given we need to work with latitude and longitude.</p>
+</blockquote>
+</li>
+<li>
+<p>Change flight mode to <code>Guided</code>, meaning that the drone will track a position command from our software.  Ardupilot provides lots of different <a href="https://ardupilot.org/copter/docs/flight-modes.html">flight modes</a> such as:</p>
+<ul>
+<li><code>Stabilise</code> pilot flies using joysticks, everything else ignored</li>
+<li><code>Loiter</code> drone uses GPS to hold position, with movements commanded by pilot using joysticks</li>
+<li><code>Land</code> drone lands at current location</li>
+<li><code>RTL</code> drone goes back to home position and lands</li>
+<li><code>Auto</code> drone follows a set of uploaded mission commands</li>
+</ul>
+<blockquote>
+<p>Although you can change mode using software, try not to do it too often.  One of the safety procedures is for the pilot to take control by changing to <code>Stabilise</code> or <code>Loiter</code> mode, and that becomes harder if your software keeps trying to change back.</p>
+</blockquote>
+</li>
+<li>
+<p><a href="https://ardupilot.org/copter/docs/arming_the_motors.html">Arm the drone</a>.  This stage starts the motors spinning, hence you only want to do it right before take-off.  It can be done by software or by the pilot using joysticks.  Arming involves certain checks of things like GPS stability and position estimation, which sometimes take about a minute to settle after powering up.  Hence you can expect to need a few goes before the drone successfuly arms.</p>
+<blockquote>
+<p>Think about safety when deciding how to arm.  You must not start the motors spinning unless you're sure there is no-one working on the drone, <em>e.g.</em> completing the battery fitting.  In the simulated examples, the software does it as soon as the drone is ready.  In practice, you might want pilot confirmation, or just leave it to the pilot themselves.</p>
+</blockquote>
+</li>
+<li>
+<p>Take-off!  This is a simple software command including a specified target altitude.</p>
+<blockquote>
+<p>If you don't take off within a few seconds of arming, the drone will automatically disarm, for safety reasons.</p>
+</blockquote>
+</li>
+<li>
+<p>Climb, waiting for the drone to get close to the target altitude.  Use the information on the <code>/vehicle_1/mavros/global_position</code> <a href="http://wiki.ros.org/mavros#mavros.2FPlugins.global_position">topics</a> to monitor progress.</p>
+<blockquote>
+<p>The drone will accept a new setpoint at any altitude.  However, for the safety of those likely to be near the takeoff point, it is undesirable for the drone to do anything other than climb straight up at first.</p>
+<p>Altitude is a surprisingly complex topic.  It can be expressed relative to mean sea level, to a standardized Earth shape model, to the location where you armed the drone, or to the local atmosphere using air pressure.  These can be many tens of metres different to each other.  <a href="http://wiki.ros.org/mavros#mavros.2FPlugins.Avoiding_Pitfalls_Related_to_Ellipsoid_Height_and_Height_Above_Mean_Sea_Level">Solutions are available</a> but I find them rather complicated.  Instead I recommend pragmatic solutions like using relative information and calculated correction factors, as we are not flying far.  <em>Note</em> there is also a helpful-looking <code>/vehicle_1/mavros/global_position/rel_alt</code> topic that I have not tried yet.</p>
+</blockquote>
+</li>
+<li>
+<p>Move the drone by sending a target, in terms of latitude, longitude and altitude, over the <code>/vehicle_1/mavros/setpoint_position/global</code> <a href="http://wiki.ros.org/mavros#mavros.2FPlugins.setpoint_position">topic</a>.  <em>Note</em> the altitude issues described above really bite here.  The position input uses a different altitude convention to the GPS output.</p>
+<blockquote>
+<p>You can also command the drone to a fixed velocity instead of a position, using the <code>/vehicle_1/mavros/setpoint_velocity/cmd_vel_unstamped</code> <a href="http://wiki.ros.org/mavros#mavros.2FPlugins.setpoint_velocity">topic</a>.  Helpfully, this is a ROS <code>Twist</code> message which is a standard for movement commands.</p>
+</blockquote>
+</li>
+<li>
+<p>Wait for the drone to reach its target, or get close enough, by monitoring the <code>/vehicle_1/mavros/global_position</code> <a href="http://wiki.ros.org/mavros#mavros.2FPlugins.global_position">topics</a> again.</p>
+<blockquote>
+<p>Calculating distance between two latitude and longitude pairs needs a little work.  In the examples, 'close' means the numbers are nearly the same, so the flight is not very accurate.  Also, the example doesn't check the velocity, so the drone tends to shoot through the target rather than stabilise at it.</p>
+</blockquote>
+</li>
+<li>
+<p>Send the drone back to land at its take-off location, by changing to <code>RTL</code> mode.</p>
+<blockquote>
+<p>The example just stops after sending the <code>RTL</code> mode command.</p>
+</blockquote>
+</li>
+</ol>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="exercises"><span class="enumerate-headings-plugin enumerate-heading-plugin">2.3</span> Exercises<a class="headerlink" href="#exercises" title="Permanent link">¶</a></h2>
+<p>All exercises work using the <code>old_school</code> code so run the simulation using <code>docker-compose -f 1_old_school/docker-compose-old-school.yml up --build</code>.</p>
+<ol>
+<li>
+<p>Run the simulation and watch it progress using <a href="https://studio.foxglove.dev" target="_blank">https://studio.foxglove.dev</a>.  Use the teleoperation buttons (the little gamepad-like panels provided in the example layout, described in <a href="../../#introspecting-ros">Introspecting ROS</a>) to interrupt the flight during climb or movement.  Play around with the teleoperation buttons to explore how they work, with careful attention to the relevant frame of reference.  Edit the panel settings and see what difference they make.</p>
+</li>
+<li>
+<p>Interrupt a simulation again and add a <code>Publisher</code> panel in Foxglove.  Publish messages to the <code>/vehicle_1/mavros/setpoint_velocity/cmd_vel_unstamped</code> topic and see how the drone responds.</p>
+</li>
+<li>
+<p>Interrupt a simulation and use a <code>Publisher</code> panel to send messages to the <code>/vehicle_1/mavros/setpoint_position/global</code> topic.  Try sending different latitude and longitude locations from the project briefing document.</p>
+<blockquote>
+<p><em>Note</em> due to a bug somewhere, you'll need to delete the <code>seq</code> line in the publisher panel to get this to work.</p>
+</blockquote>
+</li>
+<li>
+<p>Interrupt a simulation and use a combination of the gamepad and the setpoint publisher to land the drone at or near the target.  Use the <code>/vehicle_1/gimbal_tilt_cmd</code> publisher to move the camera, with <code>0</code> being horizontal and <code>1.57</code> being straight downwards.</p>
+</li>
+</ol>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../getting_started/" title="1. Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../old_school/" title="3. An Old-School Example">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>Copyright © 2022 University of Bristol Flight Laboratory</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/StarlingUAS/fenswood_volcano_template" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../getting_started/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../old_school/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script>var base_url = '../..';</script>
+<script defer="" src="../../js/theme_extra.js"></script>
+<script defer="" src="../../js/theme.js"></script>
+<script defer="" src="../../search/main.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>

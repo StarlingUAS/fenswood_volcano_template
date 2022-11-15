@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../../img/favicon.ico" rel="shortcut icon"/>
+<title>9. Conclusion and Next Steps - Fenswood Volcano Tutorial</title>
+<link href="../../css/theme.css" rel="stylesheet"/>
+<link href="../../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "9. Conclusion and Next Steps";
+        var mkdocs_page_input_path = "tutorial/conclusion.md";
+        var mkdocs_page_url = null;
+      </script>
+<script defer="" src="../../js/jquery-3.6.0.min.js"></script>
+<!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href="../.."> Fenswood Volcano Tutorial
+        </a><div role="search">
+<form action="../../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Core Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">1. Getting Started</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../drone_control/">2. Controlling a Drone using Mavlink Over ROS</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../old_school/">3. An Old-School Example</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../simple_class/">4. Implementing the contorller as a class</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modular/">5. A More Modular Controller</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../finite_state/">6. Adding A Finite State Machine</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ros_timer/">7. Using A Ros Timer</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../perception/">8. Adding Perception</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">9. Conclusion and Next Steps</a>
+<ul class="current">
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/starling/">1. Brief Starling Introduction</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/ros_package/">2. Developing a ROS package</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/containers/">3. Packaging your controller into a container</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/local_testing/">4. Local Development and Testing</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../..">Fenswood Volcano Tutorial</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a alt="Docs" class="icon icon-home" href="../.."></a> »</li>
+<li>Core Tutorial »</li>
+<li>9. Conclusion and Next Steps</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/StarlingUAS/fenswood_volcano_template/edit/master/docs/tutorial/conclusion.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="conclusion-and-next-steps"><span class="enumerate-headings-plugin enumerate-heading-plugin">9.</span> Conclusion and Next Steps<a class="headerlink" href="#conclusion-and-next-steps" title="Permanent link">¶</a></h1>
+<p><strong>Congratulations!</strong> You have finished the fenswood volcano tutorial on writing your own MAVLINK and ROS2 compatible controller.</p>
+<p><img alt="flying_cat" src="../flying_cat.gif"/></p>
+<p>Hopefully now you have learnt and understood how Mavlink is used to communicate to the drone and how to use ROS to control the drone with Mavlink. You should have also seen a number of different ways of organising your code in a more modular fashion to allow greater flexibitiliy and reliability in your implementations. Finally we showed how you might add Perception through the use of OpenCV in order to autonomously control your drone if you so wish!</p>
+<p>At this point, you should have enough knowledge to be able to create a controller which can solve the task in a simple way.</p>
+<p>However, you have probably noticed that there's probably a lot more going on under the surface. So for those wanting to do some more complex tasks, you may be interested in learning a bit more about the underlying simulation. For you, I would recommend carrying on to the Advanced Tutorial.</p>
+<p>The advanced tutorial will more formally introduce you to the Starling simulation system that you have been using and how your ROS controller fits into it.</p>
+<p>Either way, thank you for going through this tutorial and good luck going forward!</p>
+<p>Authors:</p>
+<ul>
+<li>Mickey Li (2022) (mickey.li@bristol.ac.uk)</li>
+<li>Arthur Richards (2021) (arthur.richards@bristol.ac.uk)</li>
+</ul>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../perception/" title="8. Adding Perception"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../../advanced/starling/" title="1. Brief Starling Introduction">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>Copyright © 2022 University of Bristol Flight Laboratory</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/StarlingUAS/fenswood_volcano_template" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../perception/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../../advanced/starling/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script>var base_url = '../..';</script>
+<script defer="" src="../../js/theme_extra.js"></script>
+<script defer="" src="../../js/theme.js"></script>
+<script defer="" src="../../search/main.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../../img/favicon.ico" rel="shortcut icon"/>
+<title>2. Developing a ROS package - Fenswood Volcano Tutorial</title>
+<link href="../../css/theme.css" rel="stylesheet"/>
+<link href="../../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "2. Developing a ROS package";
+        var mkdocs_page_input_path = "advanced/ros_package.md";
+        var mkdocs_page_url = null;
+      </script>
+<script defer="" src="../../js/jquery-3.6.0.min.js"></script>
+<!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href="../.."> Fenswood Volcano Tutorial
+        </a><div role="search">
+<form action="../../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Core Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/getting_started/">1. Getting Started</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/drone_control/">2. Controlling a Drone using Mavlink Over ROS</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/old_school/">3. An Old-School Example</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/simple_class/">4. Implementing the contorller as a class</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/modular/">5. A More Modular Controller</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/finite_state/">6. Adding A Finite State Machine</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/ros_timer/">7. Using A Ros Timer</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/perception/">8. Adding Perception</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/conclusion/">9. Conclusion and Next Steps</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../starling/">1. Brief Starling Introduction</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">2. Developing a ROS package</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#ros2-packages">11.1 ROS2 Packages</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#inspecting-the-package">11.1.1 Inspecting the package</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#where-is-my-ros2-package-and-package-compilation">11.1.2 "Where" is my ROS2 package and package compilation</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-file-nodes">11.2 Multi-File Nodes</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#implementing-multi-file-nodes">11.2.1 Implementing multi-file nodes</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">11.3 Exercises</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../containers/">3. Packaging your controller into a container</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../local_testing/">4. Local Development and Testing</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../..">Fenswood Volcano Tutorial</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a alt="Docs" class="icon icon-home" href="../.."></a> »</li>
+<li>Advanced Tutorial »</li>
+<li>2. Developing a ROS package</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/StarlingUAS/fenswood_volcano_template/edit/master/docs/advanced/ros_package.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="developing-a-ros-package"><span class="enumerate-headings-plugin enumerate-heading-plugin">11.</span> Developing a ROS Package<a class="headerlink" href="#developing-a-ros-package" title="Permanent link">¶</a></h1>
+<div class="toc">
+<ul>
+<li><a href="#developing-a-ros-package">11. Developing a ROS Package</a><ul>
+<li><a href="#ros2-packages">11.1 ROS2 Packages</a><ul>
+<li><a href="#inspecting-the-package">11.1.1 Inspecting the package</a></li>
+<li><a href="#where-is-my-ros2-package-and-package-compilation">11.1.2 "Where" is my ROS2 package and package compilation</a></li>
+</ul>
+</li>
+<li><a href="#multi-file-nodes">11.2 Multi-File Nodes</a><ul>
+<li><a href="#implementing-multi-file-nodes">11.2.1 Implementing multi-file nodes</a></li>
+</ul>
+</li>
+<li><a href="#exercises">11.3 Exercises</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="ros2-packages"><span class="enumerate-headings-plugin enumerate-heading-plugin">11.1</span> ROS2 Packages<a class="headerlink" href="#ros2-packages" title="Permanent link">¶</a></h2>
+<p>In the core tutorial, the focus was on the controller source code within your Python files. In <a href="../../tutorial/perception/#telling-ros-where-to-find-it">Adding Perception</a> we very briefly touched on launch files, but will did not go into much detail as to what is the rest of a ROS2 package - and this has some knock-on effects when you want to implement new functionality!</p>
+<h3 id="inspecting-the-package"><span class="enumerate-headings-plugin enumerate-heading-plugin">11.1.1</span> Inspecting the package<a class="headerlink" href="#inspecting-the-package" title="Permanent link">¶</a></h3>
+<p>Inspecting the <code>fenswood_drone_controller</code> source folder we see a few more folders and files.</p>
+<ol>
+<li><code>fenswood_drone_controller</code> - the folder which contains your source code, it is considered a python package and therefore should have an <code>__init__.py</code> file.</li>
+<li><code>launch</code> - the folder which contains all of your launch files for various versions of your controller.</li>
+<li><code>resource</code> - a Python ROS2 package specific folder which contains the executable your controller gets compiled into.</li>
+<li><code>Dockerfile</code> - not a part of a ROS2 package, this is Starling specific, see a later tutorial for more details.</li>
+<li><code>package.xml</code> - This is an xml file which ROS2 reads to find details of your package. This includes the packages and libraries that your project depends on. (It is not used here, but there is a tool called <a href="https://docs.ros.org/en/foxy/Tutorials/Intermediate/Rosdep.html"><code>rosdep</code></a> which reads this file and is often used to automatically find dependencies )</li>
+<li><code>setup.cfg</code> - This is an autogenerated file which defines where to install this package.</li>
+<li><code>setup.py</code> - The main configuration file for ROS2 Python packages. It defines the name of your ROS2 nodes within this package, as well as specifies which files get copied to the compiled version of the package.</li>
+</ol>
+<h3 id="where-is-my-ros2-package-and-package-compilation"><span class="enumerate-headings-plugin enumerate-heading-plugin">11.1.2</span> "Where" is my ROS2 package and package compilation<a class="headerlink" href="#where-is-my-ros2-package-and-package-compilation" title="Permanent link">¶</a></h3>
+<p>In the previous tutorials, implementing and writing the Python probably felt like previous times you may have used interpreted languages. You make a change, then you run your script and you can see your changes. In fact, as part of Starling, we wanted it to feel like that to make it easier to pick up and use.</p>
+<p>However, it is actually slightly more complicated when it comes to ROS2 nodes. There is a hidden step in which your ROS2 nodes are <strong>compiled</strong>, even if you are writing Python where you don't traditionally compile anything!</p>
+<blockquote>
+<p><em>Note:</em> In our Starling system, the compilation auomatically happens when you run <code>docker-compose -f ... up --build</code>.</p>
+</blockquote>
+<p>The process of <em>compilation</em> takes your ROS2 package and compresses it into a set of executables which  run your program and copies it into a <code>install</code> folder. Whenever the package is run, it then runs from the executables within the build folder.</p>
+<p>This has some knock on effects:</p>
+<ol>
+<li>Writing code without compiling it won't actually change the existing executables!</li>
+<li>If you have static data in folders within the package, such as images or configuration files, your executable might complain that it can't find them when you run it!<ul>
+<li>This is because you haven't told the compiler to also copy your new files.</li>
+<li>You have to add your new files into the <code>data_files</code> list in <code>setup.py</code>. The syntax is to add a tuple of <code>("share/" + package_name, ['A list of', 'my extra files'])</code>.</li>
+</ul>
+</li>
+<li>If you create a new ros node, it will not immediately be available for running or use in a launch file.<ul>
+<li>You have to add your ros node as a new <code>entry_point</code> in <code>setup.py</code></li>
+</ul>
+</li>
+<li>Similarly if you create a new launch file but it doesn't shown up, make sure the file has name <code>*.launch.*</code> and is in the <code>launch</code> folder.<ul>
+<li>See the <code>setup.py</code> file again.</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><em>Note:</em> As we will see in the container tutorial, all of this is not immediately obvious as its all inside the application container. See Exercises.</p>
+</blockquote>
+<h2 id="multi-file-nodes"><span class="enumerate-headings-plugin enumerate-heading-plugin">11.2</span> Multi-File Nodes<a class="headerlink" href="#multi-file-nodes" title="Permanent link">¶</a></h2>
+<p>So far all of the ros-nodes have been implemented using a single control file. In this file you are sending Mavlink commands to the drone, keeping track of the navigation as well as keeping track of the higher level mission all at the same time! As you grow your application, you may start finding the maintenance of a monolithic single file source challenging.</p>
+<p>Often we want to organise our code by some abstract notion, like functionality or purpose. For instance we want one module which just takes care of sending and receiving commands for the drone, such that if we change the overall mission, we don't accidentally break the drone communication code.</p>
+<blockquote>
+<p>One example of a similar concept is given in perception where we create an extra node whose sole job is to monitor the camera inputs. We could have put that into the controller itself rather than having an extra node, and incuring the extra costs that might be involved in creating a new node.</p>
+<p>An alternative to multi file nodes would be to make use of a new ROS2 feature called <a href="https://docs.ros.org/en/foxy/Tutorials/Intermediate/Composition.html">composition</a>. We have not explored it in Starling so far, but feel free to give it a go too.</p>
+</blockquote>
+<h3 id="implementing-multi-file-nodes"><span class="enumerate-headings-plugin enumerate-heading-plugin">11.2.1</span> Implementing multi-file nodes<a class="headerlink" href="#implementing-multi-file-nodes" title="Permanent link">¶</a></h3>
+<p>Fortunately it's almost as simply as normal Python to refactor your source into multiple files. However, there are a number of important differences, let us walk through the core changes showing in the <code>multi_part_controller_mission.py</code> file.</p>
+<ul>
+<li>The source code in <code>fenswood_drone_controller</code> is registered as a python <em>package</em>. There are a number of effects of this, but the main one being that when you import your sub-file in your main file, you have to add a <code>.</code>:</li>
+</ul>
+<pre><code class="language-python">from .multi_part_controller_drone_only import DroneController
+     ^
+</code></pre>
+<ul>
+<li>If your sub-file requires use of ROS2 node functionality (e.g. creating clients, parameters etc), you will need to pass a reference to the ROS2 node into the sub class.</li>
+</ul>
+<p>This is a little more challenging to explain - as this source code we're implementing here still represents the same single ROS2 node, all of the publishers, subscribers and other ROS2 features have to be created by the same node instance - no matter in which source file/ sub class we use. Therefore if we wish to create - say - a subscriber to <code>mavros/state</code> in the drone controller subclass, the <code>DroneController</code> will need access to the node to create the subscriber. The only way to do this is to pass in the rosnode in <code>DroneController</code>'s constructor:</p>
+<pre><code class="language-python">class DroneController():
+    def __init__(self, node):
+        self.node = node            # store the rosnode object
+        ...
+        self.node.create_subscription(State, '/vehicle_1/mavros/state', self.state_callback, 10)
+</code></pre>
+<p>"Wait", I hear you ask, aren't functions like <code>create_subscription</code> a part of the node itself, how do I pass the node to <code>DroneController</code> ... in fact where even is "the node"? Rewind to when we introduced objects and classes we created the <code>FenswoodDroneController</code> as a child of the ROS <code>Node</code> class. This means that <code>FenswoodDroneController</code> has all the properties of the <code>Node</code> and therefore is <em>itself</em> the node!</p>
+<p>Then how does a class refer to itself - through the <code>self</code> keyword of course! In Python the <code>self</code> is actually a reference to itself. So you can pass <code>self</code> to functions if you want the function to have access or change the state of <code>self</code>, just like passing any other variable to a function.</p>
+<p>Therefore in order to make multiple-source files work, we create a new controller property which represents the drone using the <code>DroneController</code> created previously. We then pass <code>self</code> into the drone to represent the ros node. This passes the node reference in so that <code>DroneController</code> then has access to <code>node</code> functions such as <code>create_subscription</code>!</p>
+<pre><code class="language-python">from .multi_part_controller_drone_only import DroneController
+
+class FenswoodDroneController(Node):
+
+    def __init__(self):
+        super().__init__('controller')
+
+        # Create object representing drone
+        self.drone = DroneController(self)
+</code></pre>
+<p>This can then be repeated each time you wish to refactor into multiple source files. This may feel weird and self-referential, but it works!</p>
+<blockquote>
+<p><em>Note:</em> Watch that the names of node parameters dont clash over the files, and that you don't create multiple publishers, subscribers and services that point to the same topic. Since these are all part of the same node, the node only likes unique things.</p>
+<p>If you find yourself needing to create multiple of the same subscriber, for example, you may need to reconsider whether your refactoring.</p>
+</blockquote>
+<p>You can run this example using the following. Note that this is not yet tested so feel free to submit a Pull Request if it doesn't fully work yet!</p>
+<pre><code class="language-bash">docker-compose -f 7_multi_part/docker-compose.yml up --build
+</code></pre>
+<h2 id="exercises"><span class="enumerate-headings-plugin enumerate-heading-plugin">11.3</span> Exercises<a class="headerlink" href="#exercises" title="Permanent link">¶</a></h2>
+<ol>
+<li>Let us inspect your ROS2 package and what it's like after compilation.<ol>
+<li>First run <code>docker-compose.yml</code> up in one terminal.</li>
+<li>Open up another terminal and use the <code>docker ps</code> to find the container id of your application container and <code>docker exec -it &lt;container id&gt; bash</code> to go inside the container. See <a href="https://starlinguas.github.io/FenswoodScenario/tutorials/inspecting/">this tutorial</a> for more details.</li>
+<li>Once inside the container, you should be in the <code>/ros_ws</code> directory. Running <code>ls -al</code> you should see a number of directories. Your source code should be in <code>src</code>. Have a look in the other folders.</li>
+<li>In the ROS2 workspace root (i.e. <code>/ros_ws</code>) you can recompile yourself manually. First enable ROS2 by running <code>source /opt/ros/foxy/setup.bash</code>, then run <code>colcon build</code>.</li>
+<li>While there you can also try and launch some of the other controllers you have been working on!</li>
+</ol>
+</li>
+<li>Lets say you want to add a new folder <code>config</code> as your code needs to read a configuration file named <code>fenswood.yaml</code> (It can just contain a single field).<ol>
+<li>Add the reading of this configuration file into your source code with some logging.</li>
+<li>Modify the <code>setup.py</code> file so that your application can read your configuration when run.</li>
+</ol>
+</li>
+<li>Try and pull out the drone related functionality into its own source file, while still remaining part of the same rosnode.</li>
+</ol>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../starling/" title="1. Brief Starling Introduction"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../containers/" title="3. Packaging your controller into a container">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>Copyright © 2022 University of Bristol Flight Laboratory</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/StarlingUAS/fenswood_volcano_template" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../starling/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../containers/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script>var base_url = '../..';</script>
+<script defer="" src="../../js/theme_extra.js"></script>
+<script defer="" src="../../js/theme.js"></script>
+<script defer="" src="../../search/main.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>

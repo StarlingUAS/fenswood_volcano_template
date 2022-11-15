@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../../img/favicon.ico" rel="shortcut icon"/>
+<title>6. Adding A Finite State Machine - Fenswood Volcano Tutorial</title>
+<link href="../../css/theme.css" rel="stylesheet"/>
+<link href="../../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "6. Adding A Finite State Machine";
+        var mkdocs_page_input_path = "tutorial/finite_state.md";
+        var mkdocs_page_url = null;
+      </script>
+<script defer="" src="../../js/jquery-3.6.0.min.js"></script>
+<!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href="../.."> Fenswood Volcano Tutorial
+        </a><div role="search">
+<form action="../../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption"><span class="caption-text">Core Tutorial</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/">1. Getting Started</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../drone_control/">2. Controlling a Drone using Mavlink Over ROS</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../old_school/">3. An Old-School Example</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../simple_class/">4. Implementing the contorller as a class</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modular/">5. A More Modular Controller</a>
+</li>
+<li class="toctree-l1 current"><a class="reference internal current" href="./">6. Adding A Finite State Machine</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#introduction">6.1 Introduction</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-code">6.2 Example code</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#exercises">6.3 Exercises</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ros_timer/">7. Using A Ros Timer</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../perception/">8. Adding Perception</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../conclusion/">9. Conclusion and Next Steps</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Advanced Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/starling/">1. Brief Starling Introduction</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/ros_package/">2. Developing a ROS package</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/containers/">3. Packaging your controller into a container</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../advanced/local_testing/">4. Local Development and Testing</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../..">Fenswood Volcano Tutorial</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a alt="Docs" class="icon icon-home" href="../.."></a> »</li>
+<li>Core Tutorial »</li>
+<li>6. Adding A Finite State Machine</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/StarlingUAS/fenswood_volcano_template/edit/master/docs/tutorial/finite_state.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="finite-state-machine"><span class="enumerate-headings-plugin enumerate-heading-plugin">6.</span> Finite state machine<a class="headerlink" href="#finite-state-machine" title="Permanent link">¶</a></h1>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="introduction"><span class="enumerate-headings-plugin enumerate-heading-plugin">6.1</span> Introduction<a class="headerlink" href="#introduction" title="Permanent link">¶</a></h2>
+<p>Our control flow is relatively simple in this example, just carrying on regardless.  As solutions grow in complexity and the number of execution paths increases, it becomes much harder to write such control logic as code.  You end up with loads of nested <code>if</code> statements and repeated tests.  A common approach to handling this is to implement the logic as a <a href="https://en.wikipedia.org/wiki/Finite-state_machine">finite state machine</a>.</p>
+<p><img alt="Finite state machine logic" src="../fsm.png"/></p>
+<p>The figure above shows an implementation of our control flow as a finite state machine.  The ovals represent the six <em>states</em> and the system must be in one of these at all times.  The arrows denote <em>transitions</em>.  Where an arrow has text, that represents the condition for making that transition.  If an arrow has now text, that represents 'all other cases'.</p>
+<p>The system will always start in the <code>init</code> state, moving to <code>arming</code> if the reported status reaches 'standby' (value 3) and remaining in <code>init</code> otherwise.  In <code>arming</code>, arm commands will regularly be sent.  If the drone takes too long to respond, the system will move to <code>exit</code> state (now handling the timeout cases properly), or if it does successfuly arm, it will move to <code>climbing</code> (issuing the take-off command on the transition), or stay in <code>arming</code> otherwise.  From <code>climbing</code> it will send the target command and move to <code>on_way</code> on reaching altitude, move to <code>landing</code> if too much time elapses, or remain <code>climbing</code> otherwise.  From the <code>on_way</code> state, either timing out or reaching the target will trigger a move to <code>landing</code>.  The <code>landing</code> state does nothing more than issue an "RTL" command and then immediately move state to <code>exit</code>, from where there is no further change as the only transition out is to stay in <code>exit</code>.</p>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+<h2 id="example-code"><span class="enumerate-headings-plugin enumerate-heading-plugin">6.2</span> Example code<a class="headerlink" href="#example-code" title="Permanent link">¶</a></h2>
+<p>To run this example, use the command:</p>
+<pre><code>docker-compose -f 4_finite_state/docker-compose-finite-state.yml up --build
+</code></pre>
+<p>The key file is <a href="https://github.com/StarlingUAS/fenswood_volcano_template/tree/main/fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py">fenswood_drone_controller/fenswood_drone_controller/controller_finite_state.py</a>.  The remainder of this section describes how it works.  As ever, only the changes from the previous <a href="../modular/#example-code">modular version</a> are highlighted.</p>
+<pre><code>import rclpy                                                    # type: ignore
+from rclpy.node import Node
+
+# import message definitions for receiving status and position
+from mavros_msgs.msg import State                               # type: ignore
+from sensor_msgs.msg import NavSatFix                           # type: ignore
+# import message definition for sending setpoint
+from geographic_msgs.msg import GeoPoseStamped                  # type: ignore
+
+# import service definitions for changing mode, arming, take-off and generic command
+from mavros_msgs.srv import SetMode, CommandBool, CommandTOL, CommandLong    # type: ignore
+
+
+class FenswoodDroneController(Node):
+
+    def __init__(self):
+        super().__init__('example_controller')
+        self.last_status = None     # global for last received status message
+        self.last_pos = None       # global for last received position message
+        self.init_alt = None       # global for global altitude at start
+        self.last_alt_rel = None   # global for last altitude relative to start
+        # create service clients for long command (datastream requests)...
+        self.cmd_cli = self.create_client(CommandLong, 'mavros/cmd/command')
+        while not self.cmd_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('command_int service not available, waiting again...')
+        # ... for mode changes ...
+        self.mode_cli = self.create_client(SetMode, 'mavros/set_mode')
+        while not self.mode_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('set_mode service not available, waiting again...')
+        # ... for arming ...
+        self.arm_cli = self.create_client(CommandBool, 'mavros/cmd/arming')
+        while not self.arm_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('arming service not available, waiting again...')
+        # ... and for takeoff
+        self.takeoff_cli = self.create_client(CommandTOL, 'mavros/cmd/takeoff')
+        while not self.takeoff_cli.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('takeoff service not available, waiting again...')
+        # create publisher for setpoint
+        self.target_pub = self.create_publisher(GeoPoseStamped, 'mavros/setpoint_position/global', 10)
+        # and make a placeholder for the last sent target
+        self.last_target = GeoPoseStamped()
+        # initial state for finite state machine
+        self.control_state = 'init'
+        # timer for time spent in each state
+        self.state_timer = 0
+</code></pre>
+<p>The last two statements are new to the <code>__init__</code> controller constructor.  <code>self.control_state</code> will record the current state of the system and, as described in the logic above, will be <code>init</code> to begin.  the <code>state_timer</code> will hold the time spent in each state, facilitating the timeout transitions (see later).</p>
+<pre><code>    # on receiving status message, save it to global
+    def state_callback(self,msg):
+        self.last_status = msg
+        self.get_logger().debug('Mode: {}.  Armed: {}.  System status: {}'.format(msg.mode,msg.armed,msg.system_status))
+
+    # on receiving positon message, save it to global
+    def position_callback(self,msg):
+        # determine altitude relative to start
+        if self.init_alt:
+            self.last_alt_rel = msg.altitude - self.init_alt
+        self.last_pos = msg
+        self.get_logger().debug('Drone at {}N,{}E altitude {}m'.format(msg.latitude,
+                                                                        msg.longitude,
+                                                                        self.last_alt_rel))
+
+    def wait_for_new_status(self):
+        """
+        Wait for new state message to be received.  These are sent at
+        1Hz so calling this is roughly equivalent to one second delay.
+        """
+        if self.last_status:
+            # if had a message before, wait for higher timestamp
+            last_stamp = self.last_status.header.stamp.sec
+            for try_wait in range(60):
+                rclpy.spin_once(self)
+                if self.last_status.header.stamp.sec &gt; last_stamp:
+                    break
+        else:
+            # if never had a message, just wait for first one
+            for try_wait in range(60):
+                if self.last_status:
+                    break
+                rclpy.spin_once(self)
+
+    def request_data_stream(self,msg_id,msg_interval):
+        cmd_req = CommandLong.Request()
+        cmd_req.command = 511
+        cmd_req.param1 = float(msg_id)
+        cmd_req.param2 = float(msg_interval)
+        future = self.cmd_cli.call_async(cmd_req)
+        rclpy.spin_until_future_complete(self, future)    # wait for response
+
+    def change_mode(self,new_mode):
+        mode_req = SetMode.Request()
+        mode_req.custom_mode = new_mode
+        future = self.mode_cli.call_async(mode_req)
+        rclpy.spin_until_future_complete(self, future)    # wait for response
+
+    def arm_request(self):
+        arm_req = CommandBool.Request()
+        arm_req.value = True
+        future = self.arm_cli.call_async(arm_req)
+        rclpy.spin_until_future_complete(self, future)
+
+    def takeoff(self,target_alt):
+        takeoff_req = CommandTOL.Request()
+        takeoff_req.altitude = target_alt
+        future = self.takeoff_cli.call_async(takeoff_req)
+        rclpy.spin_until_future_complete(self, future)
+
+    def flyto(self,lat,lon,alt):
+        self.last_target.pose.position.latitude = lat
+        self.last_target.pose.position.longitude = lon
+        self.last_target.pose.position.altitude = alt
+        self.target_pub.publish(self.last_target)
+        self.get_logger().info('Sent drone to {}N, {}E, altitude {}m'.format(lat,lon,alt))
+</code></pre>
+<p>The above utilities are unchanged - they will be called by different logic, but their operation remains the same.</p>
+<blockquote>
+<p>A <em>really</em> good style would probably package these up in a separate file as a module, as they are quite distinct and self-contained.</p>
+</blockquote>
+<pre><code>    def state_transition(self):
+        if self.control_state =='init':
+            if self.last_status.system_status==3:
+                self.get_logger().info('Drone initialized')
+                # send command to request regular position updates
+                self.request_data_stream(33, 1000000)
+                self.get_logger().info('Requested position stream')
+                # change mode to GUIDED
+                self.change_mode("GUIDED")
+                self.get_logger().info('Request sent for GUIDED mode.')
+                # move on to arming
+                return('arming')
+            else:
+                return('init')
+
+        elif self.control_state == 'arming':
+            if self.last_status.armed:
+                self.get_logger().info('Arming successful')
+                # armed - grab init alt for relative working
+                if self.last_pos:
+                    self.init_alt = self.last_pos.altitude
+                # send takeoff command
+                self.takeoff(20.0)
+                self.get_logger().info('Takeoff request sent.')
+                return('climbing')
+            elif self.state_timer &gt; 60:
+                # timeout
+                self.get_logger().error('Failed to arm')
+                return('exit')
+            else:
+                self.arm_request()
+                self.get_logger().info('Arming request sent.')
+                return('arming')
+
+        elif self.control_state == 'climbing':
+            if self.last_alt_rel &gt; 19.0:
+                self.get_logger().info('Close enough to flight altitude')
+                # move drone by sending setpoint message
+                self.flyto(51.423, -2.671, self.init_alt - 30.0) # unexplained correction factor on altitude
+                return('on_way')
+            elif self.state_timer &gt; 60:
+                # timeout
+                self.get_logger().error('Failed to reach altitude')
+                return('landing')
+            else:
+                self.get_logger().info('Climbing, altitude {}m'.format(self.last_alt_rel))
+                return('climbing')
+
+        elif self.control_state == 'on_way':
+            d_lon = self.last_pos.longitude - self.last_target.pose.position.longitude
+            d_lat = self.last_pos.latitude - self.last_target.pose.position.latitude
+            if (abs(d_lon) &lt; 0.0001) &amp; (abs(d_lat) &lt; 0.0001):
+                self.get_logger().info('Close enough to target delta={},{}'.format(d_lat,d_lon))
+                return('landing')
+            elif self.state_timer &gt; 60:
+                # timeout
+                self.get_logger().error('Failed to reach target')
+                return('landing')
+            else:
+                self.get_logger().info('Target error {},{}'.format(d_lat,d_lon))
+                return('on_way')
+
+        elif self.control_state == 'landing':
+            # return home and land
+            self.change_mode("RTL")
+            self.get_logger().info('Request sent for RTL mode.')
+            return('exit')
+
+        elif self.control_state == 'exit':
+            # nothing else to do
+            return('exit')
+</code></pre>
+<p>THe <code>state_transition</code> function implements the logic described in the text and diagram above.  The structure is typical of a finite state machine implementation: each finite state has its own 'clause' in a big <code>if...elif...elif</code> statement (C would do it as a <code>switch...case...</code>).  Thus it is easy to see where the code for each state lives, and to make changes if needed.</p>
+<p>Note the <em>actions</em> (<em>e.g.</em> sending commands) typically appear in the transitions.  For example, in the <code>init</code> state, the datastream request and the change of mode appear right before the state is updated to <code>arming</code>.  Then in the <code>arming</code> state, the actual command to arm appears in the (null) transition to stay in <code>arming</code>.  Hence the arm command will be issued over and over until success is detected.</p>
+<pre><code>    def run(self):
+        # set up two subscribers, one for vehicle state...
+        state_sub = self.create_subscription(State, 'mavros/state', self.state_callback, 10)
+        # ...and the other for global position
+        pos_sub = self.create_subscription(NavSatFix, 'mavros/global_position/global', self.position_callback, 10)
+        for try_loop in range(600):
+            if rclpy.ok():
+                self.wait_for_new_status()
+                new_state = self.state_transition()
+                if new_state == self.control_state:
+                    self.state_timer = self.state_timer + 1
+                else:
+                    self.state_timer = 0
+                self.control_state = new_state
+                self.get_logger().info('Controller state: {} for {} steps'.format(self.control_state, self.state_timer))
+</code></pre>
+<p>With each iteration of this code, the <code>run()</code> method does less and less.  With the control logic now handled in its own <code>state_transition</code> function, <code>run</code> just starts the subscribers as before and manages the state and the timer.  The <code>self.state_timer</code> counter is incremented each time, unless the state changes in which case it is reset.</p>
+<pre><code>
+def main(args=None):
+
+    rclpy.init(args=args)
+
+    controller_node = FenswoodDroneController()
+    controller_node.run()
+
+
+if __name__ == '__main__':
+    main()
+</code></pre>
+<p>Main and the Python bit at the end remain unchanged.</p>
+<h2 id="exercises"><span class="enumerate-headings-plugin enumerate-heading-plugin">6.3</span> Exercises<a class="headerlink" href="#exercises" title="Permanent link">¶</a></h2>
+<p>All exercises work involve editing the file <code>controller_finite_state.py</code>.</p>
+<ol>
+<li>
+<p>Add a second target and fly to it only if you reach the first target within a limited time, or (b) if you fail to reach the first target in time.</p>
+</li>
+<li>
+<p>Add an extra initial target, but make it very far away.  When you don't reach it in a sensible time, divert back to your original target.</p>
+</li>
+<li>
+<p>Add a human 'approve' input.  When you get to altitude, ask the operator (in the log) if they are happy to proceed, and fly to the target only if they approve.  For input, you can define your own ROS topic and have them publish through Foxglove, or re-purpose the tele-op gamepad buttons to publish to a different topic, or just ask the operator to wiggle the camera.  Test all cases you can think of: operator says 'yes' when asked, operator says 'no' when asked, operator says nothing, operator has said 'yes' but before being asked, <em>etc.</em></p>
+</li>
+<li>
+<p>Add a human 'pause' input.  Define a button, topic or some other signal, and make the drone stop and hover if the operator requests it.  There are lots of ways of implementing this, including mode changes or extra control logic.  Don't forget you can connect QGroundControl to the simulation via localhost, TCP port 5761, if you want the operator to interact that way.</p>
+</li>
+</ol>
+<p><a href="../../#contents">Back to tutorial contents</a></p>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../modular/" title="5. A More Modular Controller"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../ros_timer/" title="7. Using A Ros Timer">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+<p>Copyright © 2022 University of Bristol Flight Laboratory</p>
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/StarlingUAS/fenswood_volcano_template" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../modular/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../ros_timer/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script>var base_url = '../..';</script>
+<script defer="" src="../../js/theme_extra.js"></script>
+<script defer="" src="../../js/theme.js"></script>
+<script defer="" src="../../search/main.js"></script>
+<script defer="">
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+</body>
+</html>
