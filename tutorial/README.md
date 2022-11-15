@@ -12,6 +12,14 @@ In the examples, a drone takes off, moves to a target location, and then flies h
 
 Once you are more confident with writing writing code in Python and controlling your drone in ROS, the advanced tutorial will then slowly start peeling back the layers of the Linux and Docker 'magic' which you have been using. **You are not expected to master these aspects**. These advanced topics will give you a greater understanding of the underlying system if you wish to achieve more complex behaviours.
 
+This tutorial is part 2 of two tutorials written for the Fenswood Scenario
+
+1. Basics of Linux, ROS and Docker on this site (starting here):
+    - [https://starlinguas.github.io/FenswoodScenario/tutorials/fenswood_scenario/](https://starlinguas.github.io/FenswoodScenario/tutorials/fenswood_scenario/tutorials/intro_to_linux)
+    - Also includes simulator specific documentation.
+2. Fenswood Volcano Template Tutorials where you will learn how to create and build your controller
+    - [https://starlinguas.github.io/fenswood_volcano_template/](https://starlinguas.github.io/fenswood_volcano_template/)
+
 ## How to use this tutorial
 
 Inspired by the [minimal ROS2 examples](https://github.com/ros2/examples/tree/master/rclpy/topics/minimal_subscriber/examples_rclpy_minimal_subscriber), this tutorial takes you through several iterations of code with almost the same functionality.  A full working example is provided in each case with a detailed description of the code.  The section below shows the contents and learning obectives for each stage of the tutorial.  If you are really confident on ROS concepts and object-oriented programming in Python, go straight to the ROS timer tutorial.  Otherwise, you are advised to simply work through from start to finish _but_ you might find some stages easier than others, depending on your past experience.
