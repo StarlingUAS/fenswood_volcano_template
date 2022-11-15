@@ -24,4 +24,4 @@ run: build
 run_bash: build
 	docker run -it --rm --net=$(NETWORK) $(ENV) -e USE_SIMULATED_TIME=true $(RUN_ARGS) $(IMAGE_NAME) bash
 
-.PHONY: all build run run_bash
+.PHONY: all help build run run_bash

@@ -46,8 +46,12 @@ There are countless links in the tutorials.  These provide extra information, ba
 ### Advanced Tutorial
 
 1. [Starling](advanced/starling.md)
-     - Get an overview of the Starling drone application testing system.
-2. [Containerising your controller](advanced/containers.md)
+     - Learn what exactly Starling is and how to configure elements of it.
+2. [Developing a ROS package](advanced/ros_package.md)
+     - Learn about ROS packages and how changes get incorporated
+     - Learn how to write multi-file ros nodes
+3. [Containerising your controller](advanced/containers.md)
      - Learn what a container is, why we use them and how to run your application as a container.
-
-*Work in Progress*
+4. [Local development and testing](advanced/local_testing.md)
+     - Learn how to make your development more efficient by splitting the simulator and controller
+     - Learn how to use Makefiles in your development
